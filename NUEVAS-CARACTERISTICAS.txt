@@ -1,0 +1,209 @@
+NUEVAS CARACTERÍSTICAS AGREGADAS
+================================
+
+Se han implementado 3 módulos nuevos principales con soporte para iconos SVG y base de datos SQL:
+
+════════════════════════════════════════════════════════════════════════════════
+
+1. MÓDULO DE FACTURACIÓN 📄
+───────────────────────────
+
+✓ Crear nuevas facturas
+✓ Registrar detalles de productos vendidos
+✓ Automático: genera número de factura secuencial (FAC-4821, FAC-4822, etc)
+✓ Cambiar estado (Pagada, Pendiente, Anulada)
+✓ Anular factura (revierte automáticamente stock de productos)
+✓ Ver historial de facturas recientes
+✓ Tabla con información completa (cliente, productos, total, hora, estado)
+
+ARCHIVOS CREADOS:
+  - models-Factura.js (Queries SQL, lógica de BD)
+  - controller-Factura.js (Validaciones, errores)
+  - routes-facturas.js (6 endpoints REST)
+  - js-facturas.js (Interfaz frontend, CRUD)
+
+ENDPOINTS API:
+  GET    /api/facturas           → Obtener todas las facturas
+  GET    /api/facturas/:id       → Obtener factura con detalles
+  GET    /api/facturas/proximo   → Obtener próximo número
+  POST   /api/facturas           → Crear nueva factura
+  PUT    /api/facturas/:id/estado → Cambiar estado
+  PUT    /api/facturas/:id/anular → Anular factura (revierte stock)
+
+════════════════════════════════════════════════════════════════════════════════
+
+2. MÓDULO DE MOVIMIENTOS 📈
+────────────────────────────
+
+✓ Registrar entrada de inventario
+✓ Registrar salida de inventario
+✓ Historial completo de movimientos (entradas/salidas)
+✓ Filtrar por tipo (Todos, Entradas, Salidas)
+✓ Actualiza automáticamente stock de productos
+✓ Al eliminar movimiento, revierte cambios de stock
+✓ Vincula con proveedores
+✓ Referencia a facturas u órdenes
+
+ARCHIVOS CREADOS:
+  - models-Movimiento.js (Queries SQL, actualización de stock)
+  - controller-Movimiento.js (Validaciones)
+  - routes-movimientos.js (4 endpoints REST)
+  - js-movimientos.js (Interfaz frontend, CRUD)
+
+ENDPOINTS API:
+  GET    /api/movimientos                    → Obtener todos (con filtros)
+  GET    /api/movimientos/producto/:id       → Movimientos por producto
+  POST   /api/movimientos/entrada            → Registrar entrada
+  POST   /api/movimientos/salida             → Registrar salida
+  DELETE /api/movimientos/:id                → Eliminar (revierte stock)
+
+════════════════════════════════════════════════════════════════════════════════
+
+3. MÓDULO DE PROVEEDORES 🤝
+──────────────────────────
+
+✓ Crear nuevos proveedores
+✓ Guardar información completa (nombre, RUC, categoría, ciudad, teléfono, email, contacto)
+✓ Editar información de proveedores
+✓ Eliminar proveedores
+✓ Visualización en cards (no tabla)
+✓ Información estructurada por proveedor
+
+ARCHIVOS CREADOS:
+  - models-Proveedor.js (Queries SQL)
+  - controller-Proveedor.js (Validaciones)
+  - routes-proveedores.js (6 endpoints REST)
+  - js-proveedores.js (Interfaz frontend, CRUD)
+
+ENDPOINTS API:
+  GET    /api/proveedores       → Obtener todos
+  GET    /api/proveedores/:id   → Obtener por ID
+  GET    /api/proveedores/:id/stats → Estadísticas del proveedor
+  POST   /api/proveedores       → Crear nuevo
+  PUT    /api/proveedores/:id   → Actualizar
+  DELETE /api/proveedores/:id   → Eliminar
+
+════════════════════════════════════════════════════════════════════════════════
+
+4. SISTEMA DE ICONOS SVG 🎨
+────────────────────────────
+
+✓ Iconos hand-drawn con estilo azul (#00B4D8)
+✓ Iconos para: Factura, Entrada, Salida, Proveedor, Movimientos
+✓ Iconos de alertas: Crítica, Advertencia, Informativa
+✓ Iconos de estado: Pagada (✓), Pendiente (◎), Anulada (✕)
+
+ARCHIVO CREADO:
+  - js-iconos.js (Objeto ICONOS con métodos para cada icono)
+
+USO:
+  const html = ICONOS.factura();    // Retorna SVG como string
+  const html = ICONOS.entrada();
+  const html = ICONOS.alerta_critica();
+  // Integrado automáticamente en componentes
+
+════════════════════════════════════════════════════════════════════════════════
+
+5. BASE DE DATOS ACTUALIZADA 💾
+──────────────────────────────
+
+NUEVAS TABLAS:
+  - Proveedores (id, nombre, ruc, categoria, ciudad, telefono, email, contacto, fechas)
+  - Facturas (id, numero_factura, cliente, ruc_cliente, total, estado, usuario, notas, fechas)
+  - Factura_Detalles (id, factura_id, producto_id, cantidad, precio_unitario, subtotal)
+  - Movimientos MEJORADA (ahora con proveedor_id, descripción, etc)
+
+ÍNDICES CREADOS:
+  - idx_factura_numero → búsqueda rápida por número
+  - idx_factura_fecha → búsqueda rápida por fecha
+  - idx_proveedor_ruc → búsqueda rápida por RUC
+
+DATA DE EJEMPLO:
+  - 6 proveedores con información completa
+  - 4 facturas de ejemplo
+  - 6 movimientos de inventario
+  - Detalles de facturas vinculados
+
+════════════════════════════════════════════════════════════════════════════════
+
+6. INTERFAZ ACTUALIZADA 🖥️
+──────────────────────────
+
+SIDEBAR ACTUALIZADO:
+  - Menú muestra 3 nuevas opciones: Facturación, Movimientos, Proveedores
+  - Iconos visuales para cada sección
+  - Navegación funcional completa
+
+VISTAS NUEVAS:
+  - Vista Facturación: tabla con facturas recientes
+  - Vista Movimientos: tabla con entradas/salidas, filtros por tipo
+  - Vista Proveedores: grid de cards con información
+
+BOTONES DE ACCIÓN:
+  - "+ Nueva Factura" en vista de Facturación
+  - "📥 Registrar Entrada" y "📤 Registrar Salida" en Movimientos
+  - "+ Nuevo Proveedor" en vista de Proveedores
+
+MODALES:
+  - Crear nueva factura (selector de productos, cálculo automático)
+  - Registrar entrada (con proveedor opcional)
+  - Registrar salida (simple)
+  - Crear/Editar proveedores (formulario completo)
+
+════════════════════════════════════════════════════════════════════════════════
+
+ACTUALIZACIÓN DEL SERVIDOR 🚀
+─────────────────────────────
+
+server.js ACTUALIZADO:
+  - Registro de 3 nuevas rutas:
+    app.use('/api/facturas', facturasRoutes);
+    app.use('/api/movimientos', movimientosRoutes);
+    app.use('/api/proveedores', proveedoresRoutes);
+
+════════════════════════════════════════════════════════════════════════════════
+
+FLUJO DE DATOS COMPLETO
+───────────────────────
+
+1. REGISTRAR ENTRADA:
+   Usuario → js-movimientos.js → POST /api/movimientos/entrada 
+   → controller → modelo → INSERT Movimientos → UPDATE Productos (stock +)
+
+2. CREAR FACTURA:
+   Usuario → js-facturas.js → POST /api/facturas 
+   → controller → modelo → INSERT Facturas + INSERT Factura_Detalles 
+   → UPDATE Productos (stock -) → INSERT Movimientos (movimiento automático)
+
+3. ANULAR FACTURA:
+   Usuario → js-facturas.js → PUT /api/facturas/:id/anular 
+   → controller → modelo → SELECT Factura_Detalles 
+   → UPDATE Productos (stock +) para cada producto → UPDATE Facturas estado='Anulada'
+
+════════════════════════════════════════════════════════════════════════════════
+
+CÓMO USAR
+─────────
+
+1. Ejecutar setup-database.sql en SQL Server (crea nuevas tablas y datos)
+2. Reiniciar servidor: npm start
+3. Abrir en navegador: http://localhost:3000
+4. Login con: admin / admin123
+5. Navegar a: Facturación → crear una factura
+6. Navegar a: Movimientos → registrar entrada/salida
+7. Navegar a: Proveedores → crear nuevo proveedor
+
+════════════════════════════════════════════════════════════════════════════════
+
+PRÓXIMOS PASOS (Opcional)
+──────────────────────────
+
+✓ Agregar búsqueda en facturas/movimientos
+✓ Generar PDF de facturas
+✓ Reportes de ventas por período
+✓ Dashboards con gráficos
+✓ Importar/exportar Excel
+✓ Notificaciones de stock bajo
+✓ Historial de cambios de precios
+
+════════════════════════════════════════════════════════════════════════════════

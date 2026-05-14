@@ -1,0 +1,273 @@
+GUÍA RÁPIDA PARA TESTEAR LAS NUEVAS CARACTERÍSTICAS
+==================================================
+
+═════════════════════════════════════════════════════════════════════════════
+
+PASO 1: PREPARAR LA BASE DE DATOS
+──────────────────────────────────
+
+1. Abre SQL Server Management Studio
+2. Abre archivo: setup-database.sql
+3. Ejecuta TODO el script:
+   - Crea base de datos LubricadorasDiana
+   - Crea 7 tablas (Productos, Usuarios, Proveedores, Facturas, etc)
+   - Inserta datos de ejemplo
+   - Crea índices y vistas
+
+✓ Resultado: BD lista con data de prueba
+
+═════════════════════════════════════════════════════════════════════════════
+
+PASO 2: VERIFICAR CREDENCIALES .env
+────────────────────────────────────
+
+Abre archivo: .env
+
+Debe contener:
+  DB_SERVER=localhost          (o tu servidor)
+  DB_USER=sa                   (tu usuario SQL)
+  DB_PASSWORD=YourPassword     (tu contraseña)
+  DB_NAME=LubricadorasDiana
+  PORT=3000
+
+═════════════════════════════════════════════════════════════════════════════
+
+PASO 3: INICIAR SERVIDOR
+────────────────────────
+
+En terminal/CMD:
+  npm install              (si no lo hiciste)
+  npm start                (inicia servidor en puerto 3000)
+
+Esperado:
+  🚀 Servidor corriendo en http://localhost:3000
+  📊 Comprueba: http://localhost:3000/health
+
+═════════════════════════════════════════════════════════════════════════════
+
+PASO 4: ABRIR APLICACIÓN
+────────────────────────
+
+En navegador:
+  http://localhost:3000
+
+Login:
+  Usuario: admin
+  Contraseña: admin123
+  Rol: Administrador (selecciona)
+
+═════════════════════════════════════════════════════════════════════════════
+
+TESTEAR FACTURACIÓN
+───────────────────
+
+1. Sidebar → Facturación
+   Ves tabla con 4 facturas de ejemplo (FAC-4821, FAC-4820, etc)
+
+2. Clic "+ Nueva Factura" (botón amarillo arriba)
+   Se abre modal con:
+   - Número auto (ej: FAC-4822)
+   - Campo cliente
+   - Selector de productos (con stock disponible)
+   - Tabla de detalles (cantidad, precio, subtotal)
+   - Total calculado automático
+   - Campo estado (Pagada/Pendiente)
+
+3. Agregar productos:
+   - Haz clic en un producto (ej: Castrol GTX)
+   - Se marca checkbox
+   - Aparece en tabla de detalles
+   - Cambia cantidad si quieres
+   - Total se recalcula
+
+4. Guardar factura
+   → Stock se actualiza automáticamente
+   → Movimiento de salida se registra
+   → Toast: "✅ Factura creada exitosamente"
+   → Tabla se actualiza con nueva factura
+
+5. Acciones en tabla:
+   - 👁️ Ver detalle
+   - ✏️ Cambiar estado
+   - ❌ Anular (revierte stock)
+
+═════════════════════════════════════════════════════════════════════════════
+
+TESTEAR MOVIMIENTOS
+───────────────────
+
+1. Sidebar → Movimientos
+   Ves tabla con historial de entradas/salidas
+
+2. Filtrar:
+   - Click "Todos" → ve todas
+   - Click "Entradas" → solo entradas
+   - Click "Salidas" → solo salidas
+
+3. "📥 Registrar Entrada" (botón rojo):
+   Modal con:
+   - Selecciona producto
+   - Cantidad a agregar
+   - Proveedor (opcional)
+   - Referencia (Orden #1847, etc)
+   - Descripción
+
+4. "📤 Registrar Salida" (botón rojo):
+   Modal con:
+   - Selecciona producto
+   - Cantidad a restar
+   - Referencia (FAC-4821, etc)
+   - Descripción
+
+5. Acciones:
+   - 👁️ Ver detalle
+   - ❌ Eliminar (revierte stock)
+
+═════════════════════════════════════════════════════════════════════════════
+
+TESTEAR PROVEEDORES
+───────────────────
+
+1. Sidebar → Proveedores
+   Ves 6 cards con proveedores de ejemplo:
+   - Castrol Ecuador
+   - Texaco / Havoline
+   - Shell Ecuador
+   - Valvoline Distribuidora
+   - Liqui Moly Import
+   - Filtros del Pacifico
+
+2. "+ Nuevo Proveedor" (botón arriba):
+   Modal con campos:
+   - Nombre (ej: Lubritest)
+   - RUC (ej: 0997654321001)
+   - Categoría (ej: Aceites)
+   - Ciudad (ej: Cuenca)
+   - Teléfono
+   - Email
+   - Contacto (persona)
+
+3. Guardar → Nueva card aparece
+
+4. Acciones en cards:
+   - ✏️ Editar
+   - ❌ Eliminar
+
+═════════════════════════════════════════════════════════════════════════════
+
+FLUJO COMPLETO DE PRUEBA
+────────────────────────
+
+1. Registrar Entrada:
+   - Sidebar → Movimientos
+   - Clic "📥 Registrar Entrada"
+   - Selecciona "Castrol GTX 20W-50" (SKU-001)
+   - Cantidad: 50
+   - Proveedor: Castrol Ecuador
+   - Referencia: Orden #2000
+   - Click "Registrar Entrada"
+   → Stock de Castrol aumenta en 50
+   → Aparece en historial con tipo "entrada"
+
+2. Crear Factura:
+   - Sidebar → Facturación
+   - Clic "+ Nueva Factura"
+   - Cliente: "Juan Silva"
+   - RUC: 1721234567
+   - Selecciona "Castrol GTX 20W-50" (haz clic en producto)
+   - Cantidad: 10
+   - Selecciona "Havoline 10W-40"
+   - Cantidad: 5
+   - Total aparece calculado
+   - Click "Guardar Factura"
+   → Stock de Castrol baja de 50 a 40
+   → Stock de Havoline baja (se vendieron 5)
+   → Dos movimientos de "salida" se registran
+   → Factura aparece en tabla
+   → Toast: "✅ Factura creada"
+
+3. Ver Movimientos:
+   - Sidebar → Movimientos
+   - Ves: entrada de Castrol + 2 salidas (factura)
+   - Filtro "Entradas" → solo entrada
+   - Filtro "Salidas" → solo 2 salidas
+
+4. Anular Factura:
+   - Sidebar → Facturación
+   - En fila de la factura recién creada
+   - Click ❌ (anular)
+   → Stock se revierte (Castrol vuelve a 50)
+   → Estado factura = "Anulada"
+   → Toast: "✅ Factura anulada"
+
+═════════════════════════════════════════════════════════════════════════════
+
+ENDPOINTS PARA TESTEAR CON POSTMAN/CURL
+────────────────────────────────────────
+
+GET todas las facturas:
+  curl http://localhost:3000/api/facturas
+
+GET todos los movimientos:
+  curl http://localhost:3000/api/movimientos
+
+GET todos los proveedores:
+  curl http://localhost:3000/api/proveedores
+
+Crear nueva entrada:
+  curl -X POST http://localhost:3000/api/movimientos/entrada \
+    -H "Content-Type: application/json" \
+    -d '{"producto_id":1,"cantidad":10,"usuario":"admin"}'
+
+Crear factura:
+  curl -X POST http://localhost:3000/api/facturas \
+    -H "Content-Type: application/json" \
+    -d '{
+      "cliente":"Carlos",
+      "total":100,
+      "usuario":"admin",
+      "detalles":[
+        {"producto_id":1,"cantidad":2,"precio_unitario":14.99,"subtotal":29.98}
+      ]
+    }'
+
+═════════════════════════════════════════════════════════════════════════════
+
+SOLUCIONAR PROBLEMAS
+────────────────────
+
+❌ Error: "Cannot connect to database"
+✓ Solución: Verifica .env con credenciales correctas
+
+❌ Stock no se actualiza
+✓ Solución: Verifica que el movimiento se guardó en BD
+
+❌ Modal no se cierra
+✓ Solución: Abre consola (F12) y mira errores
+
+❌ La tabla no muestra datos
+✓ Solución: Abre DevTools → Network → verifica que fetch devuelve datos
+
+═════════════════════════════════════════════════════════════════════════════
+
+CHECKLIST COMPLETO
+──────────────────
+
+□ setup-database.sql ejecutado en SQL Server
+□ .env con credenciales correctas
+□ npm start funcionando (puerto 3000)
+□ Login exitoso (admin/admin123)
+□ Sidebar muestra: Facturación, Movimientos, Proveedores
+□ Ver tabla Facturas (4 ejemplos)
+□ Crear nueva factura (con detalles)
+□ Ver tabla Movimientos (histórico)
+□ Registrar entrada (stock aumenta)
+□ Registrar salida (stock baja)
+□ Ver cards Proveedores (6 ejemplos)
+□ Crear nuevo proveedor
+□ Anular factura (stock se revierte)
+□ API endpoints funcionan desde Postman
+
+✅ TODO FUNCIONA = Proyecto completado
+
+═════════════════════════════════════════════════════════════════════════════

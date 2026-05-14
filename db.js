@@ -3,20 +3,16 @@ require('dotenv').config();
 const sql = require('mssql');
 
 const config = {
-  server: process.env.DB_SERVER || 'localhost',
+  server: '127.0.0.1',
   database: process.env.DB_NAME || 'LubricadorasDiana',
-  authentication: {
-    type: 'default',
-    options: {
-      userName: process.env.DB_USER || 'sa',
-      password: process.env.DB_PASSWORD || 'Admin123@'
-    }
-  },
+  user: process.env.DB_USER || 'sa',
+  password: process.env.DB_PASSWORD || 'Admin123@',
   options: {
-    encrypt: true,
+    instanceName: 'SQLEXPRESS',
+    encrypt: false,
     trustServerCertificate: true,
-    connectionTimeout: 15000,
-    requestTimeout: 15000
+    connectionTimeout: 30000,
+    requestTimeout: 30000
   }
 };
 
@@ -41,12 +37,9 @@ class Database {
     try {
       if (!this.pool) await this.connect();
       const request = this.pool.request();
-      
-      // Agregar parámetros
       for (const [key, value] of Object.entries(params)) {
         request.input(key, value);
       }
-      
       const result = await request.query(queryString);
       return result.recordset;
     } catch (err) {
@@ -59,11 +52,9 @@ class Database {
     try {
       if (!this.pool) await this.connect();
       const request = this.pool.request();
-      
       for (const [key, value] of Object.entries(params)) {
         request.input(key, value);
       }
-      
       const result = await request.execute(procName);
       return result.recordset;
     } catch (err) {

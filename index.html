@@ -177,24 +177,83 @@
 
     <!-- FACTURACION VIEW -->
     <div class="view" id="view-facturacion">
+      <div class="topbar-section">
+        <div>
+          <h2>Facturación</h2>
+          <p>Registro de ventas y comprobantes</p>
+        </div>
+        <button class="btn-primary" onclick="FACTURAS.showModal()" style="margin-top: 0;">➕ Nueva Factura</button>
+      </div>
+      
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Facturación</div>
+          <div class="card-title">Facturas Recientes</div>
+          <div style="display: flex; gap: 10px;">
+            <button class="filter-btn active">Hoy</button>
+            <button class="filter-btn">Semana</button>
+            <button class="filter-btn">Mes</button>
+          </div>
         </div>
-        <div style="padding:20px;">
-          <p>Módulo de facturación en desarrollo...</p>
+        <div class="table-wrap">
+          <table id="table-facturas">
+            <thead>
+              <tr>
+                <th>N° FACTURA</th>
+                <th>CLIENTE</th>
+                <th>TOTAL</th>
+                <th>FECHA</th>
+                <th>ESTADO</th>
+                <th>ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" style="text-align:center;padding:20px;">Cargando facturas...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
 
     <!-- MOVIMIENTOS VIEW -->
     <div class="view" id="view-movimientos">
+      <div class="topbar-section">
+        <div>
+          <h2>Movimientos de Inventario</h2>
+          <p>Historial de entradas y salidas</p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 0;">
+          <button class="btn-primary" onclick="MOVIMIENTOS.showModalEntrada()" style="margin: 0;">📥 Registrar Entrada</button>
+          <button class="btn-primary" onclick="MOVIMIENTOS.showModalSalida()" style="margin: 0; background: #B54D4D;">📤 Registrar Salida</button>
+        </div>
+      </div>
+      
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Movimientos de Inventario</div>
+          <div class="card-title">Historial</div>
+          <div style="display: flex; gap: 10px;">
+            <button class="filter-btn active" onclick="MOVIMIENTOS.loadMovimientos('todos')">Todos</button>
+            <button class="filter-btn" onclick="MOVIMIENTOS.loadMovimientos('entradas')">Entradas</button>
+            <button class="filter-btn" onclick="MOVIMIENTOS.loadMovimientos('salidas')">Salidas</button>
+          </div>
         </div>
-        <div style="padding:20px;">
-          <p>Historial de movimientos en desarrollo...</p>
+        <div class="table-wrap">
+          <table id="table-movimientos">
+            <thead>
+              <tr>
+                <th>FECHA</th>
+                <th>TIPO</th>
+                <th>PRODUCTO</th>
+                <th>CANTIDAD</th>
+                <th>REFERENCIA</th>
+                <th>PROVEEDOR</th>
+                <th>RESPONSABLE</th>
+                <th>ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="8" style="text-align:center;padding:20px;">Cargando movimientos...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -213,13 +272,16 @@
 
     <!-- PROVEEDORES VIEW (Admin) -->
     <div class="view" id="view-proveedores">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Gestión de Proveedores</div>
+      <div class="topbar-section">
+        <div>
+          <h2>Proveedores</h2>
+          <p>Gestión de proveedores y órdenes de compra</p>
         </div>
-        <div style="padding:20px;">
-          <p>Módulo de proveedores en desarrollo...</p>
-        </div>
+        <button class="btn-primary" onclick="PROVEEDORES.showModal()" style="margin-top: 0;">➕ Nuevo Proveedor</button>
+      </div>
+      
+      <div id="proveedores-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px;">
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">Cargando proveedores...</div>
       </div>
     </div>
 
@@ -329,7 +391,11 @@
 <script src="js-auth.js"></script>
 <script src="js-nav.js"></script>
 <script src="js-ui.js"></script>
+<script src="js-iconos.js"></script>
 <script src="js-productos.js"></script>
+<script src="js-facturas.js"></script>
+<script src="js-movimientos.js"></script>
+<script src="js-proveedores.js"></script>
 
 </body>
 </html>

@@ -4,7 +4,10 @@ const cors = require('cors');
 require('dotenv').config();
 
 const db = require('./db');
-const productosRoutes = require('./routes/productos');
+const productosRoutes = require('./routes-productos');
+const proveedoresRoutes = require('./routes-proveedores');
+const movimientosRoutes = require('./routes-movimientos');
+const facturasRoutes = require('./routes-facturas');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname));
 
 // HEALTH CHECK
 app.get('/health', (req, res) => {
@@ -20,6 +24,9 @@ app.get('/health', (req, res) => {
 
 // RUTAS API
 app.use('/api/productos', productosRoutes);
+app.use('/api/proveedores', proveedoresRoutes);
+app.use('/api/movimientos', movimientosRoutes);
+app.use('/api/facturas', facturasRoutes);
 
 // ERROR HANDLING
 app.use((err, req, res, next) => {
