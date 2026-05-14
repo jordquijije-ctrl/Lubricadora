@@ -1,0 +1,230 @@
+<!-- ARCHIVO PARA ORGANIZACIÓN VISUAL DE ESTRUCTURA -->
+<!-- Guardar como: STRUCTURE.txt -->
+
+📦 LUBRICADORA - ESTRUCTURA DE PROYECTO COMPLETO
+================================================
+
+ARCHIVOS HTML
+=============
+📄 index.html               → Página principal (contiene todos los módulos)
+
+ARCHIVOS CSS (MODULARES)
+========================
+🎨 css-base.css            → Variables, reset, tipografía base
+🎨 css-login.css           → Estilos específicos de pantalla de login
+🎨 css-sidebar.css         → Estilos del menú lateral y navegación
+🎨 css-main.css            → Layout principal, cards, tablas, modales, animaciones
+
+ARCHIVOS JAVASCRIPT (MODULARES)
+===============================
+🔧 js-auth.js              → Sistema de autenticación (login/logout)
+🔧 js-nav.js               → Navegación entre vistas
+🔧 js-ui.js                → Componentes UI (modales, toasts)
+🔧 js-productos.js         → CRUD de productos + API calls
+
+BACKEND - SERVIDOR EXPRESS
+==========================
+🖥️ server.js               → Servidor principal Express
+💾 db.js                   → Conexión a SQL Server
+📊 models-Producto.js      → Modelo de datos (lógica)
+🎯 controller-Producto.js  → Controladores (negocio)
+🛣️ routes-productos.js     → Definición de rutas/endpoints
+
+CONFIGURACIÓN
+=============
+📦 package.json            → Dependencias de Node.js
+🔐 .env                    → Variables de entorno (secretos)
+
+BASE DE DATOS SQL SERVER
+========================
+📋 setup-database.sql      → Script para crear BD y tablas
+
+DOCUMENTACIÓN
+=============
+📖 README-COMPLETO.md      → Documentación detallada
+⚡ QUICKSTART.md           → Inicio rápido (5 minutos)
+📝 STRUCTURE.txt           → Este archivo
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FLUJO DE DATOS
+==============
+
+1. FRONTEND (index.html + CSS + JS)
+   ├─ js-auth.js       → Usuario login
+   ├─ js-nav.js        → Navega a "Productos"
+   └─ js-productos.js  → Carga datos vía API
+
+2. BACKEND (Node.js/Express)
+   ├─ server.js        → Recibe petición GET /api/productos
+   ├─ routes-productos.js → Enruta a ProductoController
+   └─ controller-Producto.js → Llama a ProductoModel
+
+3. BASE DE DATOS (SQL Server)
+   ├─ models-Producto.js → Ejecuta: SELECT * FROM Productos
+   └─ Retorna lista a controller
+
+4. DE VUELTA AL FRONTEND
+   ├─ controller devuelve JSON
+   ├─ js-productos.js recibe respuesta
+   └─ Renderiza tabla en HTML
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FLUJO DE UN CRUD COMPLETO
+=========================
+
+CREAR PRODUCTO:
+  1. Usuario click "Nuevo Producto"
+     └─ js-productos.showModal()
+  
+  2. Usuario llena formulario
+     └─ form id="productForm"
+  
+  3. Click "Guardar"
+     └─ js-productos.save()
+     └─ Envía POST /api/productos
+  
+  4. server.js recibe POST
+     └─ routes enruta a controller
+     └─ controller.create()
+  
+  5. models-Producto.create()
+     └─ Ejecuta INSERT en SQL
+  
+  6. Respuesta JSON
+     └─ js-productos.js recibe
+     └─ MODAL.close() + TOAST.show()
+     └─ loadProductos() actualiza tabla
+
+LEER PRODUCTOS:
+  js-productos.loadProductos()
+  └─ fetch GET /api/productos
+  └─ server.js / controller.getAll()
+  └─ models-Producto.getAll()
+  └─ SELECT * FROM Productos
+  └─ Retorna JSON
+  └─ js-productos.render() dibuja tabla
+
+ACTUALIZAR PRODUCTO:
+  1. Click "Editar" en tabla
+  2. Modal se llena con datos
+  3. Usuario modifica y click "Guardar"
+  4. POST con ID (productId)
+  5. server.js PUT /api/productos/:id
+  6. models-Producto.update()
+  7. UPDATE Productos WHERE id
+  8. Retorna producto actualizado
+
+ELIMINAR PRODUCTO:
+  1. Click "Eliminar"
+  2. Confirmación
+  3. DELETE /api/productos/:id
+  4. models-Producto.delete()
+  5. DELETE FROM Productos WHERE id
+  6. Recarga lista
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OBJETOS GLOBALES (Disponibles en consola)
+==========================================
+
+AUTH
+├─ AUTH.selectRole()      → Cambiar rol en login
+├─ AUTH.handleLogin()     → Procesar login
+├─ AUTH.handleLogout()    → Cerrar sesión
+└─ AUTH.currentRole       → Rol actual
+
+NAV
+└─ NAV.go(view)          → Navegar a vista (ej: 'productos')
+
+MODAL
+├─ MODAL.open(id)        → Abrir modal
+└─ MODAL.close(id)       → Cerrar modal
+
+TOAST
+└─ TOAST.show(icon, msg) → Mostrar notificación
+
+PRODUCTOS
+├─ PRODUCTOS.loadProductos()    → Cargar de BD
+├─ PRODUCTOS.showModal()        → Abrir formulario
+├─ PRODUCTOS.save()             → Guardar producto
+├─ PRODUCTOS.delete(id)         → Eliminar producto
+└─ PRODUCTOS.list               → Array de productos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ENDPOINTS API
+=============
+
+GET    /api/productos              → Todos los productos
+GET    /api/productos/:id          → Un producto
+POST   /api/productos              → Crear
+PUT    /api/productos/:id          → Actualizar
+DELETE /api/productos/:id          → Eliminar
+PATCH  /api/productos/:id/stock    → Cambiar stock
+GET    /api/productos/alertas/bajo-stock → Bajo stock
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CÓMO AGREGAR NUEVA FUNCIÓN
+===========================
+
+Ejemplo: Agregar "Facturación"
+
+1. Frontend:
+   ✓ css-facturacion.css (estilos)
+   ✓ js-facturacion.js (lógica)
+   ✓ <div id="view-facturacion"> en index.html
+   ✓ <link rel="stylesheet" href="css-facturacion.css">
+   ✓ <script src="js-facturacion.js"></script>
+
+2. Backend:
+   ✓ models-Factura.js
+   ✓ controller-Factura.js
+   ✓ routes-facturas.js
+
+3. Base de datos:
+   ✓ CREATE TABLE Facturas en setup-database.sql
+
+4. Servidor:
+   ✓ const facturasRoutes = require('./routes/facturas');
+   ✓ app.use('/api/facturas', facturasRoutes);
+
+5. Navegación:
+   ✓ Agregar nav-item con data-view="facturacion"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ARCHIVOS A EDITAR FRECUENTEMENTE
+=================================
+
+🌟 PARA CAMBIAR ESTILOS:
+   └─ css-base.css (variables de colores)
+   └─ css-*.css específicos de cada sección
+
+🌟 PARA AGREGAR LÓGICA:
+   └─ js-*.js modulares
+
+🌟 PARA CONECTAR BD:
+   └─ models-*.js
+   └─ controller-*.js
+
+🌟 PARA NUEVOS ENDPOINTS:
+   └─ routes-*.js
+
+🌟 PARA NUEVA UI:
+   └─ index.html (agregar <div id="view-...">)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VARIABLES DE ENTORNO (.env)
+============================
+
+DB_SERVER=localhost                 # Servidor SQL Server
+DB_NAME=LubricadorasDiana          # Nombre de BD
+DB_USER=sa                          # Usuario SQL Server
+DB_PASSWORD=Admin123@              # Contraseña
+PORT=3000                           # Puerto del servidor
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
