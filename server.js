@@ -10,7 +10,6 @@ const movimientosRoutes = require('./routes-movimientos');
 const facturasRoutes = require('./routes-facturas');
 const alertasRoutes = require('./routes-alertas');
 const estadisticasRoutes = require('./routes-estadisticas');
-const reportesRoutes = require('./routes-reportes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +31,6 @@ app.use('/api/movimientos', movimientosRoutes);
 app.use('/api/facturas', facturasRoutes);
 app.use('/api/alertas', alertasRoutes);
 app.use('/api/estadisticas', estadisticasRoutes);
-app.use('/api/reportes', reportesRoutes);
 
 // ERROR HANDLING
 app.use((err, req, res, next) => {

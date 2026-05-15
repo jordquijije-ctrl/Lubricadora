@@ -120,7 +120,7 @@ VALUES
 
 INSERT INTO Usuarios (usuario, nombre, rol)
 VALUES 
-  ('admin', 'Jeremi Vera', 'admin'),
+  ('admin', 'Administrador', 'admin'),
   ('empleado', 'Diana Castillo', 'empleado');
 
 -- INSERTS DE PROVEEDORES DE EJEMPLO

@@ -1,5 +1,5 @@
 const USERS = {
-  admin: { pass: 'admin123', role: 'admin', name: 'Jeremi Vera', initials: 'JV', label: 'Administrador' },
+  admin: { pass: 'admin123', role: 'admin', name: 'Administrador', initials: 'AD', label: 'Administrador' },
   empleado: { pass: 'emp123', role: 'empleado', name: 'Diana Castillo', initials: 'DC', label: 'Empleado' }
 };
 
