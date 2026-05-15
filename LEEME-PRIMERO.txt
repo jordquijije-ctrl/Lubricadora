@@ -27,7 +27,7 @@
 
 ═════════════════════════════════════════════════════════════════════════════
 
-👨‍💻 SI ERES DESARROLLADOR (PARA TÉCNICOS):
+👨‍💻 SI ERES DESARROLLADOR:
 ────────────────────────────────────────────
 
 1. 📋 Comienza: NUEVAS-CARACTERISTICAS.txt

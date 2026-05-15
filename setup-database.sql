@@ -1,11 +1,21 @@
+
+
+
 -- SCRIPT SQL PARA CREAR LA BASE DE DATOS
 -- Ejecutar en SQL Server Management Studio
 
--- Crear base de datos
-CREATE DATABASE LubricadorasDiana;
+-- Intentar crear la base de datos solo si no estamos en un entorno restringido como Somee
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'LubricadorasDiana')
+BEGIN
+    -- Nota: Esto fallará en Somee, pero el IF evita que se detenga el script si ya existe
+    EXEC('CREATE DATABASE LubricadorasDiana');
+END
 GO
 
-USE LubricadorasDiana;
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'LubricadorasDiana')
+BEGIN
+    EXEC('USE LubricadorasDiana'); -- Agrégale el EXEC y las comillas
+END
 GO
 
 -- TABLA DE PRODUCTOS
@@ -22,29 +32,6 @@ CREATE TABLE Productos (
   fecha_creacion DATETIME DEFAULT GETDATE(),
   fecha_actualizacion DATETIME DEFAULT GETDATE()
 );
-
--- TABLA DE MOVIMIENTOS (Entradas/Salidas)
-CREATE TABLE Movimientos (
-  id INT PRIMARY KEY IDENTITY(1,1),
-  producto_id INT NOT NULL,
-  tipo NVARCHAR(20), -- 'entrada' o 'salida'
-  cantidad INT,
-  referencia NVARCHAR(100),
-  usuario NVARCHAR(100),
-  fecha DATETIME DEFAULT GETDATE(),
-  FOREIGN KEY (producto_id) REFERENCES Productos(id)
-);
-
--- TABLA DE USUARIOS
-CREATE TABLE Usuarios (
-  id INT PRIMARY KEY IDENTITY(1,1),
-  usuario NVARCHAR(50) UNIQUE NOT NULL,
-  nombre NVARCHAR(255),
-  rol NVARCHAR(50), -- 'admin' o 'empleado'
-  activo BIT DEFAULT 1,
-  fecha_creacion DATETIME DEFAULT GETDATE()
-);
-
 -- TABLA DE PROVEEDORES
 CREATE TABLE Proveedores (
   id INT PRIMARY KEY IDENTITY(1,1),
@@ -58,6 +45,33 @@ CREATE TABLE Proveedores (
   fecha_creacion DATETIME DEFAULT GETDATE(),
   fecha_actualizacion DATETIME DEFAULT GETDATE()
 );
+
+-- TABLA DE MOVIMIENTOS (Entradas/Salidas)
+CREATE TABLE Movimientos (
+  id INT PRIMARY KEY IDENTITY(1,1),
+  producto_id INT NOT NULL,
+  tipo NVARCHAR(20), -- 'entrada' o 'salida'
+  cantidad INT,
+  referencia NVARCHAR(100), -- Número de factura u orden
+  usuario NVARCHAR(100),
+  proveedor_id INT,
+  descripcion NVARCHAR(255),
+  fecha DATETIME DEFAULT GETDATE(),
+  FOREIGN KEY (producto_id) REFERENCES Productos(id),
+  FOREIGN KEY (proveedor_id) REFERENCES Proveedores(id)
+);
+
+-- TABLA DE USUARIOS
+CREATE TABLE Usuarios (
+  id INT PRIMARY KEY IDENTITY(1,1),
+  usuario NVARCHAR(50) UNIQUE NOT NULL,
+  nombre NVARCHAR(255),
+  rol NVARCHAR(50), -- 'admin' o 'empleado'
+  activo BIT DEFAULT 1,
+  fecha_creacion DATETIME DEFAULT GETDATE()
+);
+
+
 
 -- TABLA DE FACTURAS
 CREATE TABLE Facturas (
@@ -85,20 +99,6 @@ CREATE TABLE Factura_Detalles (
   FOREIGN KEY (producto_id) REFERENCES Productos(id)
 );
 
--- TABLA DE MOVIMIENTOS MEJORADA (con más campos)
-CREATE TABLE Movimientos (
-  id INT PRIMARY KEY IDENTITY(1,1),
-  producto_id INT NOT NULL,
-  tipo NVARCHAR(20), -- 'entrada' o 'salida'
-  cantidad INT,
-  referencia NVARCHAR(100), -- Número de factura u orden
-  usuario NVARCHAR(100),
-  proveedor_id INT,
-  descripcion NVARCHAR(255),
-  fecha DATETIME DEFAULT GETDATE(),
-  FOREIGN KEY (producto_id) REFERENCES Productos(id),
-  FOREIGN KEY (proveedor_id) REFERENCES Proveedores(id)
-);
 
 -- ÍNDICES
 CREATE INDEX idx_producto_codigo ON Productos(codigo);
@@ -168,7 +168,7 @@ GO
 CREATE VIEW vw_productos_bajo_stock AS
 SELECT * FROM Productos 
 WHERE stock <= stock_minimo
-ORDER BY stock ASC;
+-- ORDER BY stock ASC;
 
 GO
 
@@ -177,6 +177,6 @@ SELECT
   id, nombre, codigo, stock, precio_venta,
   (stock * precio_venta) AS valoracion_total
 FROM Productos
-ORDER BY valoracion_total DESC;
+-- ORDER BY valoracion_total DESC;
 
 GO
