@@ -181,6 +181,98 @@ FROM Productos
 
 GO
 
+-- 1. VISTA DE ALERTAS (Sin cambios, esta funciona bien)
+CREATE VIEW vw_Alertas_Inventario AS
+SELECT 
+    nombre,
+    stock AS stock_actual,
+    stock_minimo,
+    CASE 
+        WHEN stock <= (stock_minimo * 0.3) THEN 'Crítico'
+        WHEN stock <= stock_minimo THEN 'Bajo'
+        ELSE 'Óptimo'
+    END AS severidad,
+    CASE 
+        WHEN stock <= (stock_minimo * 0.3) THEN 'Generar orden de compra inmediata.'
+        WHEN stock <= stock_minimo THEN 'Reabastecer esta semana.'
+        ELSE 'Sin acción requerida.'
+    END AS recomendacion
+FROM Productos
+WHERE stock <= stock_minimo;
+GO
+
+-- 2. VISTA DE MÉTRICAS GENERALES (Corregida: Agregado punto y coma y estructura escalar limpia)
+CREATE VIEW vw_Dashboard_Metricas AS
+SELECT 
+    (SELECT SUM(stock) FROM Productos) AS total_unidades,
+    (SELECT SUM(stock * precio_compra) FROM Productos) AS valoracion_inventario_costo,
+    (SELECT COUNT(*) FROM Productos WHERE stock <= stock_minimo) AS productos_en_alerta,
+    (SELECT ISNULL(SUM(cantidad), 0) FROM Movimientos 
+     WHERE tipo = 'salida' AND (referencia LIKE 'FAC-%' OR referencia = 'AJUSTE')
+     AND fecha >= DATEADD(MONTH, -1, GETDATE())) AS movimiento_mensual_unidades;
+GO
+
+-- 3. VISTA PRODUCTOS ESTRELLA (Corregida: Agrupación explícita por nombre)
+CREATE VIEW vw_Productos_Estrella AS
+SELECT TOP 10
+    p.nombre,
+    SUM(fd.cantidad) AS unidades_vendidas,
+    SUM(fd.subtotal) AS ingresos_generados,
+    CASE 
+        WHEN SUM(fd.cantidad) > 100 THEN 'Alta'
+        WHEN SUM(fd.cantidad) > 50 THEN 'Media'
+        ELSE 'Baja'
+    END AS rotacion_label
+FROM Productos p
+JOIN Factura_Detalles fd ON p.id = fd.producto_id
+JOIN Facturas f ON fd.factura_id = f.id
+WHERE f.fecha >= DATEADD(MONTH, -1, GETDATE())
+GROUP BY p.nombre -- En SQL Server basta con el nombre si no hay IDs ambiguos
+ORDER BY unidades_vendidas DESC;
+GO
+
+-- 4. VISTA PRODUCTOS HUESO (Corregida: Manejo de NULL en DATEDIFF)
+CREATE VIEW vw_Productos_Hueso AS
+SELECT 
+    p.nombre,
+    ISNULL(DATEDIFF(DAY, MAX(m.fecha), GETDATE()), 999) AS dias_sin_movimiento,
+    (p.stock * p.precio_compra) AS capital_atrapado
+FROM Productos p
+LEFT JOIN Movimientos m ON p.id = m.producto_id
+GROUP BY p.nombre, p.stock, p.precio_compra
+HAVING MAX(m.fecha) < DATEADD(DAY, -30, GETDATE()) OR MAX(m.fecha) IS NULL;
+GO
+
+-- 5. VISTA INDICADORES FINANCIEROS (CORRECCIÓN CRÍTICA)
+-- Se separan los cálculos en subconsultas para evitar duplicar el capital inmovilizado
+CREATE VIEW vw_Indicadores_Financieros AS
+SELECT 
+    -- Margen: (Ventas - Costos) / Ventas
+    CAST(
+        CASE WHEN Ventas.TotalVentas > 0 
+        THEN ((Ventas.TotalVentas - Ventas.CostoVentas) / Ventas.TotalVentas) * 100 
+        ELSE 0 END 
+    AS DECIMAL(10,2)) AS margen_utilidad_porcentaje,
+    
+    ISNULL(Inv.Capital, 0) AS capital_inmovilizado,
+    
+    -- Días promedio: Inventario / (Costo de ventas diario)
+    CAST(
+        CASE WHEN Ventas.CostoVentas > 0 
+        THEN (Inv.Capital / (Ventas.CostoVentas / 30.0)) 
+        ELSE 0 END 
+    AS DECIMAL(10,1)) AS dias_promedio_inventario
+FROM 
+    (SELECT SUM(stock * precio_compra) AS Capital FROM Productos) AS Inv,
+    (SELECT 
+        ISNULL(SUM(fd.subtotal), 0) AS TotalVentas,
+        ISNULL(SUM(fd.cantidad * p.precio_compra), 0) AS CostoVentas
+     FROM Factura_Detalles fd
+     JOIN Productos p ON fd.producto_id = p.id
+     JOIN Facturas f ON fd.factura_id = f.id
+     WHERE f.fecha >= DATEADD(MONTH, -1, GETDATE())) AS Ventas;
+GO
+
 CREATE TYPE dbo.DetalleVentaTipo AS TABLE (
     producto_id INT,
     cantidad INT,
