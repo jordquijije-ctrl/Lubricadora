@@ -180,3 +180,128 @@ FROM Productos
 -- ORDER BY valoracion_total DESC;
 
 GO
+
+CREATE TYPE dbo.DetalleVentaTipo AS TABLE (
+    producto_id INT,
+    cantidad INT,
+    precio_unitario DECIMAL(10,2)
+);
+
+GO
+
+CREATE PROCEDURE registrar_Salida
+    @numero_factura NVARCHAR(50),
+    @cliente NVARCHAR(255),
+    @ruc_cliente NVARCHAR(50),
+    @usuario NVARCHAR(100),
+    @detalles dbo.DetalleVentaTipo READONLY 
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @factura_id INT;
+    DECLARE @total_calculado DECIMAL(12,2);
+
+    -- CCalculo del total
+    SELECT @total_calculado = SUM(cantidad * precio_unitario) FROM @detalles;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- Verificar stock
+        IF EXISTS (
+            SELECT 1 FROM @detalles d
+            JOIN Productos p ON d.producto_id = p.id
+            WHERE p.stock < d.cantidad
+        )
+        BEGIN
+            RAISERROR('Venta cancelada: Uno o más productos no tienen stock suficiente.', 16, 1);
+        END
+
+        --Crear la Factura
+        INSERT INTO Facturas (numero_factura, cliente, ruc_cliente, total, usuario, fecha)
+        VALUES (@numero_factura, @cliente, @ruc_cliente, @total_calculado, @usuario, GETDATE());
+        
+        SET @factura_id = SCOPE_IDENTITY();
+
+        --Crear detalles
+        INSERT INTO Factura_Detalles (factura_id, producto_id, cantidad, precio_unitario, subtotal)
+        SELECT @factura_id, producto_id, cantidad, precio_unitario, (cantidad * precio_unitario)
+        FROM @detalles;
+
+        -- Registrar movimiento
+        INSERT INTO Movimientos (producto_id, tipo, cantidad, referencia, usuario, descripcion, fecha)
+        SELECT producto_id, 'salida', cantidad, @numero_factura, @usuario, 'Venta Facturada', GETDATE()
+        FROM @detalles;
+
+        -- Actualizar stock
+        UPDATE p
+        SET p.stock = p.stock - d.cantidad,
+            p.fecha_actualizacion = GETDATE()
+        FROM Productos p
+        JOIN @detalles d ON p.id = d.producto_id;
+
+        COMMIT TRANSACTION;
+        PRINT 'Venta realizada con éxito.';
+    END TRY
+    BEGIN CATCH
+
+        ROLLBACK TRANSACTION;
+        
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+    END CATCH
+END;
+
+go
+
+CREATE PROCEDURE registrar_Entrada
+    @proveedor_id INT,
+    @referencia_documento NVARCHAR(100), 
+    @usuario NVARCHAR(100),
+    @detalles dbo.DetalleVentaTipo READONLY 
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- Registrar movimiento
+        INSERT INTO Movimientos (
+            producto_id, 
+            tipo, 
+            cantidad, 
+            referencia, 
+            usuario, 
+            proveedor_id, 
+            descripcion, 
+            fecha
+        )
+        SELECT 
+            producto_id, 
+            'entrada', 
+            cantidad, 
+            @referencia_documento, 
+            @usuario, 
+            @proveedor_id, 
+            'Compra a proveedor', 
+            GETDATE()
+        FROM @detalles;
+
+        -- Actualizar stock
+        UPDATE p
+        SET p.stock = p.stock + d.cantidad,
+            p.fecha_actualizacion = GETDATE()
+        FROM Productos p
+        JOIN @detalles d ON p.id = d.producto_id;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+    
+        ROLLBACK TRANSACTION;
+        
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+    END CATCH
+END;
+GO
+
