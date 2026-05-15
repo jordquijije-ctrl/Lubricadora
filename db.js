@@ -26,6 +26,7 @@ const config = {
 class Database {
   constructor() {
     this.pool = null;
+    this.sql = sql;
   }
 
   async connect() {
@@ -84,4 +85,7 @@ class Database {
   }
 }
 
-module.exports = new Database();
+const db = new Database();
+db.sql = sql;
+
+module.exports = db;

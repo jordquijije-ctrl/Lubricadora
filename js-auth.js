@@ -21,6 +21,7 @@ const AUTH = {
     if (this.USERS[user] && this.USERS[user].pass === pass && this.USERS[user].role === this.selectedRole) {
       err.classList.remove('show');
       this.currentRole = this.USERS[user].role;
+      this.currentUser = { usuario: user, ...this.USERS[user] };
       document.getElementById('uName').textContent = this.USERS[user].name;
       document.getElementById('uAvatar').textContent = this.USERS[user].initials;
       document.getElementById('uRole').textContent = this.USERS[user].label;
@@ -34,6 +35,7 @@ const AUTH = {
   },
 
   handleLogout() {
+    this.currentUser = null;
     document.getElementById('app').classList.remove('active');
     document.getElementById('loginScreen').style.display = '';
     document.getElementById('loginUser').value = '';

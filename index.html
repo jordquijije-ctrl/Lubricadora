@@ -260,12 +260,37 @@
 
     <!-- ALERTAS VIEW -->
     <div class="view" id="view-alertas">
+      <div class="topbar-section">
+        <div>
+          <h2>Alertas del Sistema</h2>
+          <p>Monitoreo de stock bajo y productos críticos</p>
+        </div>
+      </div>
+      
       <div class="card">
         <div class="card-header">
-          <div class="card-title">Alertas del Sistema</div>
+          <div class="card-title">Productos con Stock Bajo</div>
+          <div style="display: flex; gap: 10px;">
+            <button class="filter-btn active" onclick="ALERTAS.loadAlertas()">Todas</button>
+            <button class="filter-btn" onclick="ALERTAS.loadAlertas('critico')">🔴 Crítico</button>
+            <button class="filter-btn" onclick="ALERTAS.loadAlertas('bajo')">🟡 Bajo</button>
+          </div>
         </div>
-        <div style="padding:20px;">
-          <p>Alertas en desarrollo...</p>
+        <div class="table-wrap">
+          <table id="table-alertas">
+            <thead>
+              <tr>
+                <th>PRODUCTO</th>
+                <th>STOCK ACTUAL</th>
+                <th>STOCK MÍNIMO</th>
+                <th>ESTADO</th>
+                <th>ÚLTIMA ACTUALIZACIÓN</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="5" style="text-align:center;padding:20px;">Cargando alertas...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -287,24 +312,90 @@
 
     <!-- ESTADISTICAS VIEW (Admin) -->
     <div class="view" id="view-estadisticas">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Estadísticas</div>
+      <div class="topbar-section">
+        <div>
+          <h2>Estadísticas</h2>
+          <p>Análisis de ventas, inventario y movimientos</p>
         </div>
-        <div style="padding:20px;">
-          <p>Estadísticas en desarrollo...</p>
+      </div>
+      
+      <div id="stats-resumen" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; padding: 0 20px;">
+        <!-- Se llena dinámicamente con tarjetas de estadísticas -->
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Top 10 Productos Vendidos</div>
+          </div>
+          <div class="table-wrap">
+            <table id="table-top-productos">
+              <thead>
+                <tr>
+                  <th>PRODUCTO</th>
+                  <th>CANTIDAD</th>
+                  <th>INGRESOS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="3" style="text-align:center;padding:10px;">Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Estado del Inventario</div>
+          </div>
+          <div id="estado-inventario" style="padding: 20px; font-size: 0.9em;">
+            Cargando...
+          </div>
         </div>
       </div>
     </div>
 
     <!-- REPORTES VIEW (Admin) -->
     <div class="view" id="view-reportes">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Reportes NIC 2</div>
+      <div class="topbar-section">
+        <div>
+          <h2>Reportes NIC 2</h2>
+          <p>Reportes contables y análisis de inventario</p>
         </div>
-        <div style="padding:20px;">
-          <p>Reportes contables en desarrollo...</p>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Balance de Inventario</div>
+          </div>
+          <div style="padding: 20px;">
+            <button class="btn-secondary" onclick="REPORTES.getBalance()" style="margin-bottom: 10px;">📊 Generar Reporte</button>
+            <table id="table-balance" style="width: 100%; font-size: 0.85em; border-collapse: collapse; display: none;">
+              <thead>
+                <tr style="background: #f0f0f0; border-bottom: 1px solid #ddd;">
+                  <th style="padding: 8px; text-align: left;">Producto</th>
+                  <th style="padding: 8px;">Cantidad</th>
+                  <th style="padding: 8px;">Valor ($)</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div id="balance-loading" style="padding: 20px; text-align: center;">Cargando...</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Costo de Ventas</div>
+          </div>
+          <div style="padding: 20px;">
+            <button class="btn-secondary" onclick="REPORTES.getCostoVentas()" style="margin-bottom: 10px;">📈 Generar Reporte</button>
+            <div id="costo-ventas-resumen" style="font-size: 0.9em; padding: 20px; background: #f9f9f9; border-radius: 5px; display: none;">
+              <!-- Se llena dinámicamente -->
+            </div>
+            <div id="costo-loading" style="padding: 20px; text-align: center;">Cargando...</div>
+          </div>
         </div>
       </div>
     </div>
@@ -396,6 +487,9 @@
 <script src="js-facturas.js"></script>
 <script src="js-movimientos.js"></script>
 <script src="js-proveedores.js"></script>
+<script src="js-alertas.js"></script>
+<script src="js-estadisticas.js"></script>
+<script src="js-reportes.js"></script>
 
 </body>
 </html>
