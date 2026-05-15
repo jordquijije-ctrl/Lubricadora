@@ -6,20 +6,7 @@ class AlertaController {
       const alertas = await AlertaModel.getAll();
       res.json(alertas);
     } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-
-  static async getByNivel(req, res) {
-    try {
-      const { nivel } = req.query;
-      if (!['critico', 'bajo'].includes(nivel)) {
-        return res.status(400).json({ error: 'Nivel debe ser "critico" o "bajo"' });
-      }
-      const alertas = await AlertaModel.getByNivel(nivel);
-      res.json(alertas);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: 'Error al obtener la lista de alertas' });
     }
   }
 
@@ -28,7 +15,7 @@ class AlertaController {
       const summary = await AlertaModel.getSummary();
       res.json(summary);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: 'Error al generar el resumen de inventario' });
     }
   }
 }

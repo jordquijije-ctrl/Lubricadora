@@ -1,14 +1,8 @@
-const express = require('express');
-const router = express.Router();
+const { Router } = require('express');
+const router = Router();
 const AlertaController = require('./controller-Alerta');
 
-// GET /api/alertas - Obtener todas las alertas
-router.get('/', AlertaController.getAll.bind(AlertaController));
-
-// GET /api/alertas/summary - Resumen de alertas (MUST BE BEFORE /nivel)
-router.get('/summary', AlertaController.getSummary.bind(AlertaController));
-
-// GET /api/alertas/nivel - Obtener alertas por nivel
-router.get('/nivel', AlertaController.getByNivel.bind(AlertaController));
+router.get('/', AlertaController.getAll);
+router.get('/summary', AlertaController.getSummary);
 
 module.exports = router;

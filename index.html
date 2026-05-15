@@ -271,9 +271,9 @@
         <div class="card-header">
           <div class="card-title">Productos con Stock Bajo</div>
           <div style="display: flex; gap: 10px;">
-            <button class="filter-btn active" onclick="ALERTAS.loadAlertas()">Todas</button>
-            <button class="filter-btn" onclick="ALERTAS.loadAlertas('critico')">🔴 Crítico</button>
-            <button class="filter-btn" onclick="ALERTAS.loadAlertas('bajo')">🟡 Bajo</button>
+            <button class="filter-btn active" onclick="ALERTAS.filterAlerts('todas', this)">Todas</button>
+            <button class="filter-btn" onclick="ALERTAS.filterAlerts('critico', this)">🔴 Crítico</button>
+            <button class="filter-btn" onclick="ALERTAS.filterAlerts('bajo', this)">🟡 Bajo</button>
           </div>
         </div>
         <div class="table-wrap">
