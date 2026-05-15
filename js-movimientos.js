@@ -52,6 +52,7 @@ const MOVIMIENTOS = {
   },
 
   showModalEntrada() {
+    console.log('📥 Abriendo modal de entrada...');
     MODAL.open('Registrar Entrada de Inventario', `
       <form id="form-entrada">
         <div class="form-group">
@@ -91,15 +92,20 @@ const MOVIMIENTOS = {
       </form>
     `);
 
-    this.cargarSelectsEntrada();
-
-    document.getElementById('form-entrada').addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.saveEntrada();
-    });
+    setTimeout(() => {
+      this.cargarSelectsEntrada();
+      const form = document.getElementById('form-entrada');
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.saveEntrada();
+        });
+      }
+    }, 100);
   },
 
   showModalSalida() {
+    console.log('📤 Abriendo modal de salida...');
     MODAL.open('Registrar Salida de Inventario', `
       <form id="form-salida">
         <div class="form-group">
@@ -133,12 +139,16 @@ const MOVIMIENTOS = {
       </form>
     `);
 
-    this.cargarSelectsSalida();
-
-    document.getElementById('form-salida').addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.saveSalida();
-    });
+    setTimeout(() => {
+      this.cargarSelectsSalida();
+      const form = document.getElementById('form-salida');
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.saveSalida();
+        });
+      }
+    }, 100);
   },
 
   cargarSelectsEntrada() {
@@ -183,7 +193,7 @@ const MOVIMIENTOS = {
     const descripcion = document.getElementById('descripcion').value;
 
     if (!producto_id || !cantidad) {
-      TOAST.show('❌ Producto y cantidad son requeridos', 'error');
+      TOAST.show('❌', 'Producto y cantidad son requeridos');
       return;
     }
 
@@ -196,20 +206,20 @@ const MOVIMIENTOS = {
           cantidad,
           referencia,
           proveedor_id,
-          usuario: AUTH.currentUser.nombre,
+          usuario: AUTH.currentUser.name,
           descripcion
         })
       });
 
       if (!response.ok) throw new Error('Error al registrar entrada');
 
-      MODAL.close();
+      MODAL.closeDynamic();
       this.loadMovimientos(this.filtroActual);
       PRODUCTOS.loadProductos();
-      TOAST.show('✅ ✓ Entrada registrada', 'success');
+      TOAST.show('✅', 'Entrada registrada correctamente');
     } catch (error) {
       console.error('Error:', error);
-      TOAST.show('❌ Error al registrar entrada', 'error');
+      TOAST.show('❌', error.message || 'Error al registrar entrada');
     }
   },
 
@@ -220,7 +230,7 @@ const MOVIMIENTOS = {
     const descripcion = document.getElementById('descripcion').value;
 
     if (!producto_id || !cantidad) {
-      TOAST.show('❌ Producto y cantidad son requeridos', 'error');
+      TOAST.show('❌', 'Producto y cantidad son requeridos');
       return;
     }
 
@@ -232,20 +242,20 @@ const MOVIMIENTOS = {
           producto_id,
           cantidad,
           referencia,
-          usuario: AUTH.currentUser.nombre,
+          usuario: AUTH.currentUser.name,
           descripcion
         })
       });
 
       if (!response.ok) throw new Error('Error al registrar salida');
 
-      MODAL.close();
+      MODAL.closeDynamic();
       this.loadMovimientos(this.filtroActual);
       PRODUCTOS.loadProductos();
-      TOAST.show('✅ ✓ Salida registrada', 'success');
+      TOAST.show('✅', 'Salida registrada correctamente');
     } catch (error) {
       console.error('Error:', error);
-      TOAST.show('❌ Error al registrar salida', 'error');
+      TOAST.show('❌', error.message || 'Error al registrar salida');
     }
   },
 

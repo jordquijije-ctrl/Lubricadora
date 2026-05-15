@@ -55,6 +55,9 @@ const FACTURAS = {
   },
 
   showModal() {
+    console.log('📋 Abriendo modal de facturas...');
+    console.log('Productos disponibles:', PRODUCTOS.list.length);
+    
     MODAL.open('Crear Nueva Factura', `
       <form id="form-factura">
         <div class="form-group">
@@ -123,15 +126,22 @@ const FACTURAS = {
       </form>
     `);
 
-    this.cargarProductosModal();
-    this.getProximoNumero().then(num => {
-      document.getElementById('numero_factura').value = num;
-    });
+    // Esperar a que el DOM esté listo
+    setTimeout(() => {
+      this.cargarProductosModal();
+      this.getProximoNumero().then(num => {
+        const input = document.getElementById('numero_factura');
+        if (input) input.value = num;
+      });
 
-    document.getElementById('form-factura').addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.save();
-    });
+      const form = document.getElementById('form-factura');
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.save();
+        });
+      }
+    }, 100);
   },
 
   cargarProductosModal() {
@@ -228,12 +238,12 @@ const FACTURAS = {
     const notas = document.getElementById('notas').value;
 
     if (!cliente) {
-      TOAST.show('❌ Ingresa el nombre del cliente', 'error');
+      TOAST.show('❌', 'Ingresa el nombre del cliente');
       return;
     }
 
     if (this.detalles.length === 0) {
-      TOAST.show('❌ Agrega al menos un producto', 'error');
+      TOAST.show('❌', 'Agrega al menos un producto');
       return;
     }
 
@@ -246,21 +256,24 @@ const FACTURAS = {
           ruc_cliente,
           total,
           estado,
-          usuario: AUTH.currentUser.nombre,
+          usuario: AUTH.currentUser.name,
           notas,
           detalles: this.detalles
         })
       });
 
-      if (!response.ok) throw new Error('Error al guardar factura');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Error al guardar factura');
+      }
 
-      MODAL.close();
+      MODAL.closeDynamic();
       this.detalles = [];
       this.loadFacturas();
-      TOAST.show('✅ Factura creada exitosamente', 'success');
+      TOAST.show('✅', 'Factura creada exitosamente');
     } catch (error) {
       console.error('Error:', error);
-      TOAST.show('❌ Error al crear factura', 'error');
+      TOAST.show('❌', error.message || 'Error al crear factura');
     }
   },
 

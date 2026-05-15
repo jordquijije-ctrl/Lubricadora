@@ -1,4 +1,5 @@
 const db = require('./db');
+const sql = require('mssql');
 
 class FacturaModel {
   // Obtener todas las facturas
@@ -14,8 +15,9 @@ class FacturaModel {
           FROM Facturas
           ORDER BY fecha DESC
         `);
-      return result.recordset;
+      return result.recordset || [];
     } catch (error) {
+      console.error('Error en FacturaModel.getAll:', error);
       throw error;
     }
   }
@@ -28,7 +30,7 @@ class FacturaModel {
       // Obtener factura
       const resultFactura = await pool
         .request()
-        .input('id', db.sql.Int, id)
+        .input('id', sql.Int, id)
         .query('SELECT * FROM Facturas WHERE id = @id');
 
       if (resultFactura.recordset.length === 0) {
@@ -40,7 +42,7 @@ class FacturaModel {
       // Obtener detalles
       const resultDetalles = await pool
         .request()
-        .input('factura_id', db.sql.Int, id)
+        .input('factura_id', sql.Int, id)
         .query(`
           SELECT 
             fd.id, fd.producto_id, p.nombre as producto, 
@@ -50,9 +52,10 @@ class FacturaModel {
           WHERE fd.factura_id = @factura_id
         `);
 
-      factura.detalles = resultDetalles.recordset;
+      factura.detalles = resultDetalles.recordset || [];
       return factura;
     } catch (error) {
+      console.error('Error en FacturaModel.getById:', error);
       throw error;
     }
   }
@@ -76,6 +79,7 @@ class FacturaModel {
       const numero = parseInt(ultima.split('-')[1]) + 1;
       return `FAC-${numero}`;
     } catch (error) {
+      console.error('Error en FacturaModel.getProximoNumero:', error);
       throw error;
     }
   }
@@ -91,13 +95,13 @@ class FacturaModel {
       // Insertar factura
       const resultFactura = await pool
         .request()
-        .input('numero_factura', db.sql.NVarChar, proximoNumero)
-        .input('cliente', db.sql.NVarChar, datos.cliente)
-        .input('ruc_cliente', db.sql.NVarChar, datos.ruc_cliente || null)
-        .input('total', db.sql.Decimal(12, 2), datos.total || 0)
-        .input('estado', db.sql.NVarChar, datos.estado || 'Pagada')
-        .input('usuario', db.sql.NVarChar, datos.usuario || 'sistema')
-        .input('notas', db.sql.NVarChar, datos.notas || null)
+        .input('numero_factura', sql.NVarChar, proximoNumero)
+        .input('cliente', sql.NVarChar, datos.cliente)
+        .input('ruc_cliente', sql.NVarChar, datos.ruc_cliente || null)
+        .input('total', sql.Decimal(12, 2), datos.total || 0)
+        .input('estado', sql.NVarChar, datos.estado || 'Pagada')
+        .input('usuario', sql.NVarChar, datos.usuario || 'sistema')
+        .input('notas', sql.NVarChar, datos.notas || null)
         .query(`
           INSERT INTO Facturas (numero_factura, cliente, ruc_cliente, total, estado, usuario, notas)
           VALUES (@numero_factura, @cliente, @ruc_cliente, @total, @estado, @usuario, @notas);
@@ -111,11 +115,11 @@ class FacturaModel {
         for (const detalle of datos.detalles) {
           await pool
             .request()
-            .input('factura_id', db.sql.Int, facturaId)
-            .input('producto_id', db.sql.Int, detalle.producto_id)
-            .input('cantidad', db.sql.Int, detalle.cantidad)
-            .input('precio_unitario', db.sql.Decimal(10, 2), detalle.precio_unitario)
-            .input('subtotal', db.sql.Decimal(12, 2), detalle.subtotal)
+            .input('factura_id', sql.Int, facturaId)
+            .input('producto_id', sql.Int, detalle.producto_id)
+            .input('cantidad', sql.Int, detalle.cantidad)
+            .input('precio_unitario', sql.Decimal(10, 2), detalle.precio_unitario)
+            .input('subtotal', sql.Decimal(12, 2), detalle.subtotal)
             .query(`
               INSERT INTO Factura_Detalles (factura_id, producto_id, cantidad, precio_unitario, subtotal)
               VALUES (@factura_id, @producto_id, @cantidad, @precio_unitario, @subtotal)
@@ -124,8 +128,8 @@ class FacturaModel {
           // Restar del stock (salida)
           await pool
             .request()
-            .input('producto_id', db.sql.Int, detalle.producto_id)
-            .input('cantidad', db.sql.Int, detalle.cantidad)
+            .input('producto_id', sql.Int, detalle.producto_id)
+            .input('cantidad', sql.Int, detalle.cantidad)
             .query(`
               UPDATE Productos 
               SET stock = stock - @cantidad, fecha_actualizacion = GETDATE()
@@ -135,11 +139,11 @@ class FacturaModel {
           // Registrar movimiento de salida
           await pool
             .request()
-            .input('producto_id', db.sql.Int, detalle.producto_id)
-            .input('tipo', db.sql.NVarChar, 'salida')
-            .input('cantidad', db.sql.Int, detalle.cantidad)
-            .input('referencia', db.sql.NVarChar, proximoNumero)
-            .input('usuario', db.sql.NVarChar, datos.usuario)
+            .input('producto_id', sql.Int, detalle.producto_id)
+            .input('tipo', sql.NVarChar, 'salida')
+            .input('cantidad', sql.Int, detalle.cantidad)
+            .input('referencia', sql.NVarChar, proximoNumero)
+            .input('usuario', sql.NVarChar, datos.usuario)
             .query(`
               INSERT INTO Movimientos (producto_id, tipo, cantidad, referencia, usuario)
               VALUES (@producto_id, @tipo, @cantidad, @referencia, @usuario)
@@ -149,6 +153,7 @@ class FacturaModel {
 
       return { id: facturaId, numero_factura: proximoNumero, ...datos };
     } catch (error) {
+      console.error('Error en FacturaModel.create:', error);
       throw error;
     }
   }
@@ -159,8 +164,8 @@ class FacturaModel {
       const pool = await db.connect();
       await pool
         .request()
-        .input('id', db.sql.Int, id)
-        .input('estado', db.sql.NVarChar, estado)
+        .input('id', sql.Int, id)
+        .input('estado', sql.NVarChar, estado)
         .query(`
           UPDATE Facturas 
           SET estado = @estado, fecha_actualizacion = GETDATE()
@@ -168,6 +173,7 @@ class FacturaModel {
         `);
       return { id, estado };
     } catch (error) {
+      console.error('Error en FacturaModel.updateEstado:', error);
       throw error;
     }
   }
@@ -187,8 +193,8 @@ class FacturaModel {
       for (const detalle of factura.detalles) {
         await pool
           .request()
-          .input('producto_id', db.sql.Int, detalle.producto_id)
-          .input('cantidad', db.sql.Int, detalle.cantidad)
+          .input('producto_id', sql.Int, detalle.producto_id)
+          .input('cantidad', sql.Int, detalle.cantidad)
           .query(`
             UPDATE Productos 
             SET stock = stock + @cantidad, fecha_actualizacion = GETDATE()
@@ -199,7 +205,7 @@ class FacturaModel {
       // Cambiar estado a Anulada
       await pool
         .request()
-        .input('id', db.sql.Int, id)
+        .input('id', sql.Int, id)
         .query(`
           UPDATE Facturas 
           SET estado = 'Anulada', fecha_actualizacion = GETDATE()
@@ -208,6 +214,7 @@ class FacturaModel {
 
       return { id, estado: 'Anulada' };
     } catch (error) {
+      console.error('Error en FacturaModel.anular:', error);
       throw error;
     }
   }

@@ -1,4 +1,5 @@
 const db = require('./db');
+const sql = require('mssql');
 
 class MovimientoModel {
   // Obtener todos los movimientos
@@ -20,19 +21,20 @@ class MovimientoModel {
 
       if (filtros.tipo) {
         query += ` AND m.tipo = @tipo`;
-        request.input('tipo', db.sql.NVarChar, filtros.tipo);
+        request.input('tipo', sql.NVarChar, filtros.tipo);
       }
 
       if (filtros.producto_id) {
         query += ` AND m.producto_id = @producto_id`;
-        request.input('producto_id', db.sql.Int, filtros.producto_id);
+        request.input('producto_id', sql.Int, filtros.producto_id);
       }
 
       query += ` ORDER BY m.fecha DESC`;
 
       const result = await request.query(query);
-      return result.recordset;
+      return result.recordset || [];
     } catch (error) {
+      console.error('Error en MovimientoModel.getAll:', error);
       throw error;
     }
   }
@@ -43,7 +45,7 @@ class MovimientoModel {
       const pool = await db.connect();
       const result = await pool
         .request()
-        .input('producto_id', db.sql.Int, producto_id)
+        .input('producto_id', sql.Int, producto_id)
         .query(`
           SELECT m.*, p.nombre as producto, pr.nombre as proveedor
           FROM Movimientos m
@@ -52,8 +54,9 @@ class MovimientoModel {
           WHERE m.producto_id = @producto_id
           ORDER BY m.fecha DESC
         `);
-      return result.recordset;
+      return result.recordset || [];
     } catch (error) {
+      console.error('Error en MovimientoModel.getByProducto:', error);
       throw error;
     }
   }
@@ -66,13 +69,13 @@ class MovimientoModel {
       // Crear movimiento
       const resultMovimiento = await pool
         .request()
-        .input('producto_id', db.sql.Int, datos.producto_id)
-        .input('tipo', db.sql.NVarChar, 'entrada')
-        .input('cantidad', db.sql.Int, datos.cantidad)
-        .input('referencia', db.sql.NVarChar, datos.referencia || null)
-        .input('usuario', db.sql.NVarChar, datos.usuario || 'sistema')
-        .input('proveedor_id', db.sql.Int, datos.proveedor_id || null)
-        .input('descripcion', db.sql.NVarChar, datos.descripcion || null)
+        .input('producto_id', sql.Int, datos.producto_id)
+        .input('tipo', sql.NVarChar, 'entrada')
+        .input('cantidad', sql.Int, datos.cantidad)
+        .input('referencia', sql.NVarChar, datos.referencia || null)
+        .input('usuario', sql.NVarChar, datos.usuario || 'sistema')
+        .input('proveedor_id', sql.Int, datos.proveedor_id || null)
+        .input('descripcion', sql.NVarChar, datos.descripcion || null)
         .query(`
           INSERT INTO Movimientos (producto_id, tipo, cantidad, referencia, usuario, proveedor_id, descripcion)
           VALUES (@producto_id, @tipo, @cantidad, @referencia, @usuario, @proveedor_id, @descripcion);
@@ -84,8 +87,8 @@ class MovimientoModel {
       // Actualizar stock del producto
       await pool
         .request()
-        .input('producto_id', db.sql.Int, datos.producto_id)
-        .input('cantidad', db.sql.Int, datos.cantidad)
+        .input('producto_id', sql.Int, datos.producto_id)
+        .input('cantidad', sql.Int, datos.cantidad)
         .query(`
           UPDATE Productos 
           SET stock = stock + @cantidad, fecha_actualizacion = GETDATE()
@@ -94,6 +97,7 @@ class MovimientoModel {
 
       return { id: movimientoId, tipo: 'entrada', ...datos };
     } catch (error) {
+      console.error('Error en MovimientoModel.registrarEntrada:', error);
       throw error;
     }
   }
@@ -106,12 +110,12 @@ class MovimientoModel {
       // Crear movimiento
       const resultMovimiento = await pool
         .request()
-        .input('producto_id', db.sql.Int, datos.producto_id)
-        .input('tipo', db.sql.NVarChar, 'salida')
-        .input('cantidad', db.sql.Int, datos.cantidad)
-        .input('referencia', db.sql.NVarChar, datos.referencia || null)
-        .input('usuario', db.sql.NVarChar, datos.usuario || 'sistema')
-        .input('descripcion', db.sql.NVarChar, datos.descripcion || null)
+        .input('producto_id', sql.Int, datos.producto_id)
+        .input('tipo', sql.NVarChar, 'salida')
+        .input('cantidad', sql.Int, datos.cantidad)
+        .input('referencia', sql.NVarChar, datos.referencia || null)
+        .input('usuario', sql.NVarChar, datos.usuario || 'sistema')
+        .input('descripcion', sql.NVarChar, datos.descripcion || null)
         .query(`
           INSERT INTO Movimientos (producto_id, tipo, cantidad, referencia, usuario, descripcion)
           VALUES (@producto_id, @tipo, @cantidad, @referencia, @usuario, @descripcion);
@@ -123,8 +127,8 @@ class MovimientoModel {
       // Actualizar stock del producto (restar)
       await pool
         .request()
-        .input('producto_id', db.sql.Int, datos.producto_id)
-        .input('cantidad', db.sql.Int, datos.cantidad)
+        .input('producto_id', sql.Int, datos.producto_id)
+        .input('cantidad', sql.Int, datos.cantidad)
         .query(`
           UPDATE Productos 
           SET stock = stock - @cantidad, fecha_actualizacion = GETDATE()
@@ -133,6 +137,7 @@ class MovimientoModel {
 
       return { id: movimientoId, tipo: 'salida', ...datos };
     } catch (error) {
+      console.error('Error en MovimientoModel.registrarSalida:', error);
       throw error;
     }
   }
@@ -145,7 +150,7 @@ class MovimientoModel {
       // Obtener movimiento para revertir cambios de stock
       const movimiento = await pool
         .request()
-        .input('id', db.sql.Int, id)
+        .input('id', sql.Int, id)
         .query('SELECT * FROM Movimientos WHERE id = @id');
 
       if (movimiento.recordset.length === 0) {
@@ -158,8 +163,8 @@ class MovimientoModel {
       if (mov.tipo === 'entrada') {
         await pool
           .request()
-          .input('producto_id', db.sql.Int, mov.producto_id)
-          .input('cantidad', db.sql.Int, mov.cantidad)
+          .input('producto_id', sql.Int, mov.producto_id)
+          .input('cantidad', sql.Int, mov.cantidad)
           .query(`
             UPDATE Productos 
             SET stock = stock - @cantidad, fecha_actualizacion = GETDATE()
@@ -168,8 +173,8 @@ class MovimientoModel {
       } else {
         await pool
           .request()
-          .input('producto_id', db.sql.Int, mov.producto_id)
-          .input('cantidad', db.sql.Int, mov.cantidad)
+          .input('producto_id', sql.Int, mov.producto_id)
+          .input('cantidad', sql.Int, mov.cantidad)
           .query(`
             UPDATE Productos 
             SET stock = stock + @cantidad, fecha_actualizacion = GETDATE()
@@ -180,11 +185,12 @@ class MovimientoModel {
       // Eliminar movimiento
       await pool
         .request()
-        .input('id', db.sql.Int, id)
+        .input('id', sql.Int, id)
         .query('DELETE FROM Movimientos WHERE id = @id');
 
       return { id };
     } catch (error) {
+      console.error('Error en MovimientoModel.delete:', error);
       throw error;
     }
   }

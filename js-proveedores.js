@@ -75,6 +75,7 @@ const PROVEEDORES = {
   },
 
   showModal() {
+    console.log('➕ Abriendo modal de nuevo proveedor...');
     MODAL.open('Crear Nuevo Proveedor', `
       <form id="form-proveedor">
         <div class="form-group">
@@ -121,10 +122,15 @@ const PROVEEDORES = {
       </form>
     `);
 
-    document.getElementById('form-proveedor').addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.save();
-    });
+    setTimeout(() => {
+      const form = document.getElementById('form-proveedor');
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.save();
+        });
+      }
+    }, 100);
   },
 
   async save() {
