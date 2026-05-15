@@ -253,6 +253,71 @@ END;
 
 go
 
+CREATE PROCEDURE registrar_Salida_Manual
+    @producto_id INT,
+    @cantidad INT,
+    @descripcion NVARCHAR(255),
+    @usuario NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Validación de cantidad
+    IF @cantidad <= 0
+    BEGIN
+        RAISERROR('La cantidad debe ser un número positivo.', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- 1. Verificar stock actual
+        DECLARE @stock_actual INT;
+        SELECT @stock_actual = stock FROM Productos WHERE id = @producto_id;
+
+        IF @stock_actual < @cantidad
+        BEGIN
+            RAISERROR('Operación cancelada: Stock insuficiente para realizar el ajuste.', 16, 1);
+        END
+
+        -- 2. Insertar movimiento de salida
+        -- Usamos 'AJUSTE' en referencia para diferenciarlo de las facturas 'FAC-XXX'
+        INSERT INTO Movimientos (
+            producto_id, 
+            tipo, 
+            cantidad, 
+            referencia, 
+            usuario, 
+            descripcion, 
+            fecha
+        )
+        VALUES (
+            @producto_id, 
+            'salida', 
+            @cantidad, 
+            'AJUSTE', 
+            @usuario, 
+            @descripcion, 
+            GETDATE()
+        );
+
+        -- 3. Actualizar el stock en la tabla Productos
+        UPDATE Productos 
+        SET stock = stock - @cantidad,
+            fecha_actualizacion = GETDATE()
+        WHERE id = @producto_id;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMessage, 16, 1);
+    END CATCH
+END;
+
+go
+
 CREATE PROCEDURE registrar_Entrada
     @proveedor_id INT,
     @referencia_documento NVARCHAR(100), 
