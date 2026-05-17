@@ -14,12 +14,16 @@ const DASHBOARD_CTRL = {
 
   async loadKPIs() {
     try {
-      const [resGen, resInv] = await Promise.all([
+      const [resGen, resInv, resMov, resAlert] = await Promise.all([
         fetch(`${DASHBOARD_API}/estadisticas/generales`),
-        fetch(`${DASHBOARD_API}/estadisticas/inventario`)
+        fetch(`${DASHBOARD_API}/estadisticas/inventario`),
+        fetch(`${DASHBOARD_API}/movimientos`),
+        fetch(`${DASHBOARD_API}/alertas`)
       ]);
       const dataGen = await resGen.json();
       const dataInv = await resInv.json();
+      const dataMov = await resMov.json();
+      const dataAlert = await resAlert.json();
 
       const totalProd = dataGen.total_unidades_stock || 0;
       const valoracion = dataGen.valor_inventario || 0;
@@ -41,6 +45,62 @@ const DASHBOARD_CTRL = {
       document.getElementById('dash-kpi-valoracion').textContent = `$${formatNumber(valoracion)}`;
       document.getElementById('dash-kpi-bajo').textContent = bajoCritico;
       document.getElementById('dash-kpi-ventas').textContent = `$${formatNumber(ventasTotales)}`;
+
+      // Calcular tendencias (últimos 7 días)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+      let netItems = 0;
+      let netSalesCount = 0;
+      if (Array.isArray(dataMov)) {
+        dataMov.forEach(m => {
+          const mDate = new Date(m.fecha_movimiento || m.fecha);
+          if (mDate >= sevenDaysAgo) {
+            const tipo = (m.tipo_movimiento || m.tipo || '').toLowerCase();
+            if (tipo === 'entrada' || tipo === 'compra') {
+              netItems += (m.cantidad || 0);
+            } else if (tipo === 'salida' || tipo === 'venta') {
+              netItems -= (m.cantidad || 0);
+              netSalesCount++;
+            }
+          }
+        });
+      }
+
+      let newAlerts = 0;
+      if (Array.isArray(dataAlert)) {
+        dataAlert.forEach(a => {
+          const aDate = new Date(a.fecha_alerta || a.fecha || a.fecha_creacion);
+          if (aDate >= sevenDaysAgo) {
+            newAlerts++;
+          }
+        });
+      }
+
+      // Renderizar tendencias
+      const tTotal = document.getElementById('dash-trend-total');
+      if (tTotal) {
+        if (netItems > 0) { tTotal.className = 'trend up'; tTotal.textContent = `↑ +${netItems}`; }
+        else if (netItems < 0) { tTotal.className = 'trend down'; tTotal.textContent = `↓ ${netItems}`; }
+        else { tTotal.className = 'trend'; tTotal.textContent = '-'; }
+      }
+
+      const tVal = document.getElementById('dash-trend-valoracion');
+      if (tVal) {
+        tVal.className = 'trend up'; tVal.textContent = 'Actualizado';
+      }
+
+      const tBajo = document.getElementById('dash-trend-bajo');
+      if (tBajo) {
+        if (newAlerts > 0) { tBajo.className = 'trend down'; tBajo.textContent = `↑ ${newAlerts} nuevas`; }
+        else { tBajo.className = 'trend up'; tBajo.textContent = `0 nuevas`; }
+      }
+
+      const tVentas = document.getElementById('dash-trend-ventas');
+      if (tVentas) {
+        tVentas.className = 'trend up'; tVentas.textContent = `↑ ${netSalesCount} (7d)`;
+      }
+
     } catch (e) {
       console.error('Error cargando KPIs Dashboard:', e);
     }
