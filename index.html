@@ -151,7 +151,7 @@
             </div>
             <div class="trend up">↑ +12%</div>
           </div>
-          <div class="kpi-value">1,284</div>
+          <div class="kpi-value" id="dash-kpi-total">...</div>
           <div class="kpi-label">Total productos en stock</div>
         </div>
         
@@ -162,7 +162,7 @@
             </div>
             <div class="trend up">↑ +8.3%</div>
           </div>
-          <div class="kpi-value">$18,420</div>
+          <div class="kpi-value" id="dash-kpi-valoracion">...</div>
           <div class="kpi-label">Valoración del inventario</div>
         </div>
 
@@ -173,7 +173,7 @@
             </div>
             <div class="trend down">↓ -3</div>
           </div>
-          <div class="kpi-value">12</div>
+          <div class="kpi-value" id="dash-kpi-bajo">...</div>
           <div class="kpi-label">Productos en stock bajo</div>
         </div>
 
@@ -184,8 +184,8 @@
             </div>
             <div class="trend up">↑ 4.2x</div>
           </div>
-          <div class="kpi-value">4.2</div>
-          <div class="kpi-label">Índice de rotación mensual</div>
+          <div class="kpi-value" id="dash-kpi-ventas">...</div>
+          <div class="kpi-label">Ventas totales</div>
         </div>
       </div>
 
@@ -212,7 +212,7 @@
                   <th>ESTADO</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="dash-inventory-list">
                 <tr>
                   <td>
                     <div class="product-cell">
@@ -294,7 +294,7 @@
             <div class="card-title">Alertas del Sistema</div>
             <a href="#" class="card-action" onclick="NAV.go('alertas'); return false;">Ver todas →</a>
           </div>
-          <div class="alert-list">
+          <div class="alert-list" id="dash-alert-list">
             <div class="alert-item">
               <div class="alert-dot critical"></div>
               <div class="alert-content">
@@ -361,7 +361,7 @@
             <div class="card-title">Últimos Movimientos</div>
             <a href="#" class="card-action" onclick="NAV.go('movimientos'); return false;">Historial →</a>
           </div>
-          <div class="mov-list">
+          <div class="mov-list" id="dash-mov-list">
             <div class="mov-item">
               <div class="mov-icon" style="color: #B54D4D; background: #FAEFEF;">↘</div>
               <div class="mov-content">
