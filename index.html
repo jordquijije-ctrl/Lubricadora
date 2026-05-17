@@ -141,8 +141,317 @@
 
     <!-- DASHBOARD VIEW -->
     <div class="view active" id="view-dashboard">
-      <h2>Bienvenido al Dashboard</h2>
-      <p>Selecciona una sección en el menú lateral para comenzar.</p>
+      
+      <!-- Top Row: KPIs -->
+      <div class="dashboard-kpis">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="color: #4A7C59; background: #EDF5F0;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <div class="trend up">↑ +12%</div>
+          </div>
+          <div class="kpi-value">1,284</div>
+          <div class="kpi-label">Total productos en stock</div>
+        </div>
+        
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="color: #4A7C59; background: #EDF5F0;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <div class="trend up">↑ +8.3%</div>
+          </div>
+          <div class="kpi-value">$18,420</div>
+          <div class="kpi-label">Valoración del inventario</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="color: #C4883A; background: #FDF5EB;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <div class="trend down">↓ -3</div>
+          </div>
+          <div class="kpi-value">12</div>
+          <div class="kpi-label">Productos en stock bajo</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <div class="kpi-icon" style="color: #B54D4D; background: #FAEFEF;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            </div>
+            <div class="trend up">↑ 4.2x</div>
+          </div>
+          <div class="kpi-value">4.2</div>
+          <div class="kpi-label">Índice de rotación mensual</div>
+        </div>
+      </div>
+
+      <!-- Middle Row -->
+      <div class="dashboard-grid middle-row">
+        <!-- Inventario -->
+        <div class="card">
+          <div class="card-header dashboard-card-header">
+            <div class="card-title">Inventario de Productos</div>
+            <div class="dash-tabs">
+              <button class="dash-tab active">Todos</button>
+              <button class="dash-tab">Aceites</button>
+              <button class="dash-tab">Filtros</button>
+              <a href="#" class="card-action" onclick="NAV.go('productos'); return false;">Ver todo →</a>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>PRODUCTO</th>
+                  <th>CATEGORÍA</th>
+                  <th>STOCK</th>
+                  <th>ESTADO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="product-cell">
+                      <div class="product-thumb" style="color: #2F80ED; background: #E8F0FE;">🛢️</div>
+                      <div>
+                        <div class="product-name">Castrol GTX 20W-50</div>
+                        <div class="product-sku">SKU-001 · 1 Galón</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>Aceites</td>
+                  <td style="font-weight: 600;">48</td>
+                  <td><span class="stock-badge ok">Óptimo</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="product-cell">
+                      <div class="product-thumb" style="color: #2F80ED; background: #E8F0FE;">🛢️</div>
+                      <div>
+                        <div class="product-name">Havoline 10W-40</div>
+                        <div class="product-sku">SKU-002 · 1 Litro</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>Aceites</td>
+                  <td style="font-weight: 600;">7</td>
+                  <td><span class="stock-badge low">Stock bajo</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="product-cell">
+                      <div class="product-thumb" style="color: #9B51E0; background: #F3E8FD;">⚙️</div>
+                      <div>
+                        <div class="product-name">Filtro aceite Toyota</div>
+                        <div class="product-sku">SKU-015 · Unidad</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>Filtros</td>
+                  <td style="font-weight: 600;">22</td>
+                  <td><span class="stock-badge ok">Óptimo</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="product-cell">
+                      <div class="product-thumb" style="color: #2F80ED; background: #E8F0FE;">🛢️</div>
+                      <div>
+                        <div class="product-name">Valvoline MaxLife 5W-30</div>
+                        <div class="product-sku">SKU-008 · 1 Galón</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>Aceites</td>
+                  <td style="font-weight: 600;">3</td>
+                  <td><span class="stock-badge critical">Crítico</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="product-cell">
+                      <div class="product-thumb" style="color: #EB5757; background: #FDE8E8;">🧴</div>
+                      <div>
+                        <div class="product-name">Liqui Moly Ceratec</div>
+                        <div class="product-sku">SKU-022 · 300ml</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>Aditivos</td>
+                  <td style="font-weight: 600;">15</td>
+                  <td><span class="stock-badge ok">Óptimo</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Alertas -->
+        <div class="card">
+          <div class="card-header dashboard-card-header">
+            <div class="card-title">Alertas del Sistema</div>
+            <a href="#" class="card-action" onclick="NAV.go('alertas'); return false;">Ver todas →</a>
+          </div>
+          <div class="alert-list">
+            <div class="alert-item">
+              <div class="alert-dot critical"></div>
+              <div class="alert-content">
+                <div class="alert-title">Stock crítico: Valvoline 5W-30</div>
+                <div class="alert-desc">Quedan solo 3 uds. Mínimo: 10.</div>
+              </div>
+              <div class="alert-time">12m</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot critical"></div>
+              <div class="alert-content">
+                <div class="alert-title">Stock crítico: Shell Helix 10W-40</div>
+                <div class="alert-desc">Quedan 2 uds. Mínimo: 8.</div>
+              </div>
+              <div class="alert-time">45m</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot warning"></div>
+              <div class="alert-content">
+                <div class="alert-title">Stock bajo: Havoline 10W-40</div>
+                <div class="alert-desc">7 uds restantes.</div>
+              </div>
+              <div class="alert-time">2h</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot warning"></div>
+              <div class="alert-content">
+                <div class="alert-title">Sin rotación: MotorClean 250ml</div>
+                <div class="alert-desc">45 días sin movimiento.</div>
+              </div>
+              <div class="alert-time">3h</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-dot success"></div>
+              <div class="alert-content">
+                <div class="alert-title">Recepción completada #1847</div>
+                <div class="alert-desc">Orden Castrol registrada.</div>
+              </div>
+              <div class="alert-time">5h</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row -->
+      <div class="dashboard-grid bottom-row">
+        <!-- Ventas vs Compras -->
+        <div class="card">
+          <div class="card-header dashboard-card-header">
+            <div class="card-title">Ventas vs Compras</div>
+            <div class="dash-tabs bg-tabs">
+              <button class="dash-tab active">Semana</button>
+              <button class="dash-tab">Mes</button>
+            </div>
+          </div>
+          <div class="chart-area">
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-color" style="background: #1A1A18;"></span> Ventas</span>
+              <span class="legend-item"><span class="legend-color" style="background: #E8E6E1;"></span> Compras</span>
+            </div>
+            <div class="mock-chart">
+              <div class="chart-col">
+                <div class="bar-group">
+                  <div class="bar sales" style="height: 60%"></div>
+                  <div class="bar purchases" style="height: 40%"></div>
+                </div>
+                <div class="chart-label" style="left: -2px;">Lun</div>
+              </div>
+              <div class="chart-col">
+                <div class="bar-group">
+                  <div class="bar sales" style="height: 40%"></div>
+                  <div class="bar purchases" style="height: 70%"></div>
+                </div>
+                <div class="chart-label" style="left: -2px;">Mar</div>
+              </div>
+              <div class="chart-col">
+                <div class="bar-group">
+                  <div class="bar sales" style="height: 80%"></div>
+                  <div class="bar purchases" style="height: 30%"></div>
+                </div>
+                <div class="chart-label" style="left: -2px;">Mié</div>
+              </div>
+              <div class="chart-col">
+                <div class="bar-group">
+                  <div class="bar sales" style="height: 50%"></div>
+                  <div class="bar purchases" style="height: 50%"></div>
+                </div>
+                <div class="chart-label" style="left: -2px;">Jue</div>
+              </div>
+              <div class="chart-col">
+                <div class="bar-group">
+                  <div class="bar sales" style="height: 90%"></div>
+                  <div class="bar purchases" style="height: 20%"></div>
+                </div>
+                <div class="chart-label" style="left: -2px;">Vie</div>
+              </div>
+              <div class="chart-col">
+                <div class="bar-group">
+                  <div class="bar sales" style="height: 30%"></div>
+                  <div class="bar purchases" style="height: 10%"></div>
+                </div>
+                <div class="chart-label" style="left: -2px;">Sáb</div>
+              </div>
+              <div class="chart-col">
+                <div class="bar-group">
+                  <div class="bar sales" style="height: 20%"></div>
+                  <div class="bar purchases" style="height: 10%"></div>
+                </div>
+                <div class="chart-label" style="left: -2px;">Dom</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Últimos Movimientos -->
+        <div class="card">
+          <div class="card-header dashboard-card-header">
+            <div class="card-title">Últimos Movimientos</div>
+            <a href="#" class="card-action" onclick="NAV.go('movimientos'); return false;">Historial →</a>
+          </div>
+          <div class="mov-list">
+            <div class="mov-item">
+              <div class="mov-icon" style="color: #B54D4D; background: #FAEFEF;">↘</div>
+              <div class="mov-content">
+                <div class="mov-title">Castrol GTX 20W-50</div>
+                <div class="mov-desc">Venta · #4821 · 14:32</div>
+              </div>
+              <div class="mov-amount neg">-2</div>
+            </div>
+            <div class="mov-item">
+              <div class="mov-icon" style="color: #4A7C59; background: #EDF5F0;">↗</div>
+              <div class="mov-content">
+                <div class="mov-title">Filtro aceite Toyota</div>
+                <div class="mov-desc">Compra · #1847 · 11:15</div>
+              </div>
+              <div class="mov-amount pos">+24</div>
+            </div>
+            <div class="mov-item">
+              <div class="mov-icon" style="color: #B54D4D; background: #FAEFEF;">↘</div>
+              <div class="mov-content">
+                <div class="mov-title">Havoline 10W-40</div>
+                <div class="mov-desc">Venta · #4820 · 10:48</div>
+              </div>
+              <div class="mov-amount neg">-3</div>
+            </div>
+            <div class="mov-item">
+              <div class="mov-icon" style="color: #4A7C59; background: #EDF5F0;">↗</div>
+              <div class="mov-content">
+                <div class="mov-title">Valvoline MaxLife 5W-30</div>
+                <div class="mov-desc">Compra · #1845 · Ayer</div>
+              </div>
+              <div class="mov-amount pos">+12</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- PRODUCTOS VIEW -->
