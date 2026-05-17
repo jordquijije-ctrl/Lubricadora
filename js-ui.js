@@ -26,6 +26,8 @@ const MODAL = {
       overlay.addEventListener('click', e => {
         if (e.target === overlay) this.closeDynamic();
       });
+    } else {
+      overlay.style.display = 'flex';
     }
 
     // Crear modal

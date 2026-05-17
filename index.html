@@ -104,9 +104,6 @@
         <div class="nav-item" data-view="estadisticas" data-admin="1" onclick="NAV.go('estadisticas')">
           📊 Estadísticas
         </div>
-        <div class="nav-item" data-view="reportes" data-admin="1" onclick="NAV.go('reportes')">
-          📋 Reportes NIC 2
-        </div>
       </div>
     </nav>
 
@@ -356,49 +353,6 @@
     </div>
 
     <!-- REPORTES VIEW (Admin) -->
-    <div class="view" id="view-reportes">
-      <div class="topbar-section">
-        <div>
-          <h2>Reportes NIC 2</h2>
-          <p>Reportes contables y análisis de inventario</p>
-        </div>
-      </div>
-      
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px;">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Balance de Inventario</div>
-          </div>
-          <div style="padding: 20px;">
-            <button class="btn-secondary" onclick="REPORTES.getBalance()" style="margin-bottom: 10px;">📊 Generar Reporte</button>
-            <table id="table-balance" style="width: 100%; font-size: 0.85em; border-collapse: collapse; display: none;">
-              <thead>
-                <tr style="background: #f0f0f0; border-bottom: 1px solid #ddd;">
-                  <th style="padding: 8px; text-align: left;">Producto</th>
-                  <th style="padding: 8px;">Cantidad</th>
-                  <th style="padding: 8px;">Valor ($)</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <div id="balance-loading" style="padding: 20px; text-align: center;">Cargando...</div>
-          </div>
-        </div>
-        
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Costo de Ventas</div>
-          </div>
-          <div style="padding: 20px;">
-            <button class="btn-secondary" onclick="REPORTES.getCostoVentas()" style="margin-bottom: 10px;">📈 Generar Reporte</button>
-            <div id="costo-ventas-resumen" style="font-size: 0.9em; padding: 20px; background: #f9f9f9; border-radius: 5px; display: none;">
-              <!-- Se llena dinámicamente -->
-            </div>
-            <div id="costo-loading" style="padding: 20px; text-align: center;">Cargando...</div>
-          </div>
-        </div>
-      </div>
-    </div>
 
   </main>
 </div>
@@ -489,7 +443,6 @@
 <script src="js-proveedores.js"></script>
 <script src="js-alertas.js"></script>
 <script src="js-estadisticas.js"></script>
-<script src="js-reportes.js"></script>
 
 </body>
 </html>

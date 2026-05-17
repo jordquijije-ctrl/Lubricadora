@@ -24,7 +24,6 @@ Los archivos CSS y JavaScript han sido separados del HTML para mejor mantenibili
 - **Alertas**: Sistema de notificaciones
 - **Proveedores**: Gestión de proveedores (Admin)
 - **Estadísticas**: Reportes y gráficos (Admin)
-- **Reportes NIC 2**: Informes contables (Admin)
 
 ## Credenciales de prueba
 

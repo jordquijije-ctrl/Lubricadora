@@ -70,8 +70,7 @@ const titles = {
   movimientos: 'Movimientos',
   alertas: 'Alertas',
   proveedores: 'Proveedores',
-  estadisticas: 'Estadísticas',
-  reportes: 'Reportes NIC 2'
+  estadisticas: 'Estadísticas'
 };
 
 function nav(view) {
