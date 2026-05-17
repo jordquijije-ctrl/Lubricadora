@@ -143,7 +143,7 @@ const DASHBOARD_CTRL = {
               </div>
             </td>
             <td>${p.categoria || 'Sin categoría'}</td>
-            <td style="font-weight: 600;">${p.stock_actual}</td>
+            <td style="font-weight: 600;">${p.stock !== undefined ? p.stock : p.stock_actual}</td>
             <td><span class="stock-badge ${badgeClass}">${badgeText}</span></td>
           </tr>
         `;
@@ -196,25 +196,34 @@ const DASHBOARD_CTRL = {
       const container = document.getElementById('dash-alert-list');
       if (!container || !Array.isArray(alertas)) return;
 
+      if (alertas.length === 0) {
+        container.innerHTML = '<div style="padding:15px;text-align:center;color:#6B6962;">No hay alertas pendientes.</div>';
+        return;
+      }
+
       const topAlerts = alertas.slice(0, 5);
 
       container.innerHTML = topAlerts.map(a => {
-        const isResolved = a.estado === 'resuelta';
+        const severidad = (a.severidad || '').toLowerCase();
         let dotClass = 'success';
-        if (!isResolved) {
-          if (a.tipo === 'stock_critico') dotClass = 'critical';
-          else if (a.tipo === 'stock_bajo') dotClass = 'warning';
-          else dotClass = 'warning';
+        
+        if (severidad.includes('crítico') || severidad.includes('critico')) {
+          dotClass = 'critical';
+        } else if (severidad.includes('bajo')) {
+          dotClass = 'warning';
         }
 
-        const dateStr = new Date(a.fecha_alerta).toLocaleDateString();
+        const title = `Stock ${a.severidad || 'bajo'}: ${a.nombre || 'Producto desconocido'}`;
+        const desc = `Quedan ${a.stock_actual || 0} uds. Mínimo: ${a.stock_minimo || 0}.`;
+        
+        const dateStr = a.fecha_alerta ? new Date(a.fecha_alerta).toLocaleDateString() : 'Hoy';
 
         return `
           <div class="alert-item">
             <div class="alert-dot ${dotClass}"></div>
             <div class="alert-content">
-              <div class="alert-title">${a.tipo.replace('_', ' ').toUpperCase()}</div>
-              <div class="alert-desc">${a.mensaje}</div>
+              <div class="alert-title">${title}</div>
+              <div class="alert-desc">${desc}</div>
             </div>
             <div class="alert-time">${dateStr}</div>
           </div>
@@ -229,12 +238,34 @@ const DASHBOARD_CTRL = {
     try {
       const res = await fetch(`${DASHBOARD_API}/movimientos`);
       const movs = await res.json();
+      this.movsData = movs;
       
       this.renderMovementsList(movs);
-      this.renderChart(movs);
+      this.renderChart(movs, 'semana');
+      this.setupChartTabs();
     } catch (e) {
       console.error('Error cargando Movimientos Dashboard:', e);
     }
+  },
+
+  setupChartTabs() {
+    const chartCard = document.getElementById('ventasChart')?.closest('.card');
+    if (!chartCard) return;
+    const tabsContainer = chartCard.querySelector('.dash-tabs');
+    if (!tabsContainer) return;
+    
+    const newContainer = tabsContainer.cloneNode(true);
+    tabsContainer.parentNode.replaceChild(newContainer, tabsContainer);
+    
+    const newTabs = newContainer.querySelectorAll('.dash-tab');
+    newTabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        newTabs.forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        const period = e.target.textContent.trim().toLowerCase();
+        this.renderChart(this.movsData, period);
+      });
+    });
   },
 
   renderMovementsList(movs) {
@@ -244,39 +275,50 @@ const DASHBOARD_CTRL = {
     const topMovs = movs.slice(0, 4);
 
     container.innerHTML = topMovs.map(m => {
-      const isEntrada = m.tipo_movimiento === 'entrada' || m.tipo_movimiento === 'compra';
+      const tipo = (m.tipo || m.tipo_movimiento || '').toLowerCase();
+      const isEntrada = tipo === 'entrada' || tipo === 'compra';
       const icon = isEntrada ? '↗' : '↘';
       const colorStyle = isEntrada ? 'color: #4A7C59; background: #EDF5F0;' : 'color: #B54D4D; background: #FAEFEF;';
       const sign = isEntrada ? '+' : '-';
       const amountClass = isEntrada ? 'pos' : 'neg';
       
-      const dateStr = new Date(m.fecha_movimiento).toLocaleDateString();
+      const fecha = m.fecha || m.fecha_movimiento;
+      const dateStr = fecha ? new Date(fecha).toLocaleDateString() : 'Fecha desc.';
+      const nombre = m.producto || m.nombre_producto || 'Desconocido';
 
       return `
         <div class="mov-item">
           <div class="mov-icon" style="${colorStyle}">${icon}</div>
           <div class="mov-content">
-            <div class="mov-title">${m.nombre_producto}</div>
-            <div class="mov-desc">${m.tipo_movimiento} · ${dateStr}</div>
+            <div class="mov-title">${nombre}</div>
+            <div class="mov-desc" style="text-transform: capitalize;">${tipo} · ${dateStr}</div>
           </div>
-          <div class="mov-amount ${amountClass}">${sign}${m.cantidad}</div>
+          <div class="mov-amount ${amountClass}">${sign}${m.cantidad || 0}</div>
         </div>
       `;
     }).join('');
   },
 
-  renderChart(movs) {
+  renderChart(movs, period = 'semana') {
     const ctx = document.getElementById('ventasChart');
     if (!ctx) return;
 
-    // Procesamiento básico: agrupar por los últimos 7 días
-    const last7Days = Array.from({length: 7}).map((_, i) => {
+    const daysCount = period === 'mes' ? 30 : 7;
+
+    // Procesamiento básico: agrupar por días
+    const lastDays = Array.from({length: daysCount}).map((_, i) => {
       const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
+      d.setDate(d.getDate() - (daysCount - 1 - i));
+      let label;
+      if (period === 'mes') {
+        label = d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+      } else {
+        label = d.toLocaleDateString('es-ES', { weekday: 'short' });
+      }
       return {
         dateObj: d,
         dateStr: d.toISOString().split('T')[0],
-        label: d.toLocaleDateString('es-ES', { weekday: 'short' }),
+        label: label,
         ventas: 0,
         compras: 0
       };
@@ -284,36 +326,39 @@ const DASHBOARD_CTRL = {
 
     if (Array.isArray(movs)) {
       movs.forEach(m => {
-        const mDate = new Date(m.fecha_movimiento).toISOString().split('T')[0];
-        const dayMatch = last7Days.find(d => d.dateStr === mDate);
+        const fecha = m.fecha || m.fecha_movimiento;
+        if (!fecha) return;
+        const mDate = new Date(fecha).toISOString().split('T')[0];
+        const dayMatch = lastDays.find(d => d.dateStr === mDate);
         if (dayMatch) {
-          if (m.tipo_movimiento === 'salida' || m.tipo_movimiento === 'venta') {
-            dayMatch.ventas += m.cantidad;
-          } else if (m.tipo_movimiento === 'entrada' || m.tipo_movimiento === 'compra') {
-            dayMatch.compras += m.cantidad;
+          const tipo = (m.tipo || m.tipo_movimiento || '').toLowerCase();
+          if (tipo === 'salida' || tipo === 'venta') {
+            dayMatch.ventas += (m.cantidad || 0);
+          } else if (tipo === 'entrada' || tipo === 'compra') {
+            dayMatch.compras += (m.cantidad || 0);
           }
         }
       });
     }
 
     const data = {
-      labels: last7Days.map(d => d.label),
+      labels: lastDays.map(d => d.label),
       datasets: [
         {
           label: 'Ventas',
-          data: last7Days.map(d => d.ventas),
+          data: lastDays.map(d => d.ventas),
           backgroundColor: '#1A1A18',
           borderRadius: 4,
-          barPercentage: 0.6,
-          categoryPercentage: 0.8
+          barPercentage: period === 'mes' ? 0.9 : 0.6,
+          categoryPercentage: period === 'mes' ? 1.0 : 0.8
         },
         {
           label: 'Compras',
-          data: last7Days.map(d => d.compras),
+          data: lastDays.map(d => d.compras),
           backgroundColor: '#E8E6E1',
           borderRadius: 4,
-          barPercentage: 0.6,
-          categoryPercentage: 0.8
+          barPercentage: period === 'mes' ? 0.9 : 0.6,
+          categoryPercentage: period === 'mes' ? 1.0 : 0.8
         }
       ]
     };

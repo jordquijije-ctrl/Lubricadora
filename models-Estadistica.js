@@ -40,7 +40,7 @@ class EstadisticaModel {
       const pool = await db.connect();
       const result = await pool
         .request()
-        .query(`SELECT * FROM vw_Estado_Inventario_Detallado ORDER BY nombre`);
+        .query(`SELECT v.*, p.categoria FROM vw_Estado_Inventario_Detallado v LEFT JOIN Productos p ON v.id = p.id ORDER BY v.nombre`);
       return result.recordset;
     } catch (error) {
       throw error;
