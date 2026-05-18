@@ -268,6 +268,8 @@ const FACTURAS = {
     const estado = document.getElementById('estado').value;
     const notas = document.getElementById('notas').value;
 
+    const submitBtn = document.querySelector('#form-factura button[type="submit"]');
+
     if (!cliente) {
       TOAST.show('❌', 'Ingresa el nombre del cliente');
       return;
@@ -276,6 +278,11 @@ const FACTURAS = {
     if (this.detalles.length === 0) {
       TOAST.show('❌', 'Agrega al menos un producto');
       return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '⏳ Guardando...';
     }
 
     try {
@@ -305,6 +312,10 @@ const FACTURAS = {
     } catch (error) {
       console.error('Error:', error);
       TOAST.show('❌', error.message || 'Error al crear factura');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '💾 Guardar Factura';
+      }
     }
   },
 
