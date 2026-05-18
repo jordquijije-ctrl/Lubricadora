@@ -68,7 +68,7 @@ class FacturaModel {
         .request()
         .query(`
           SELECT TOP 1 numero_factura FROM Facturas 
-          ORDER BY id DESC
+          ORDER BY CAST(SUBSTRING(numero_factura, 5, LEN(numero_factura)) AS INT) DESC
         `);
 
       if (result.recordset.length === 0) {

@@ -441,9 +441,10 @@
         <div class="card-header">
           <div class="card-title">Facturas Recientes</div>
           <div style="display: flex; gap: 10px;">
-            <button class="filter-btn active">Hoy</button>
-            <button class="filter-btn">Semana</button>
-            <button class="filter-btn">Mes</button>
+            <button class="filter-btn active" onclick="FACTURAS.filterFacturas('hoy', this)">Hoy</button>
+            <button class="filter-btn" onclick="FACTURAS.filterFacturas('semana', this)">Semana</button>
+            <button class="filter-btn" onclick="FACTURAS.filterFacturas('mes', this)">Mes</button>
+            <button class="filter-btn" onclick="FACTURAS.filterFacturas('todas', this)">Todas</button>
           </div>
         </div>
         <div class="table-wrap">

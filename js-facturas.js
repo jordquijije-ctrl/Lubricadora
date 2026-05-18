@@ -3,6 +3,17 @@ const FACTURAS = {
   detalles: [],
   API_URL: 'http://localhost:3000/api/facturas',
   currentFactura: null,
+  currentFilter: 'hoy',
+
+  filterFacturas(periodo, btnElement) {
+    this.currentFilter = periodo;
+    if (btnElement) {
+      const buttons = btnElement.parentElement.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      btnElement.classList.add('active');
+    }
+    this.render();
+  },
 
   async loadFacturas() {
     try {
@@ -21,7 +32,27 @@ const FACTURAS = {
     if (!tbody) return;
 
     tbody.innerHTML = '';
-    this.list.forEach(factura => {
+    
+    const now = new Date();
+    let facturasToRender = this.list;
+
+    if (this.currentFilter === 'hoy') {
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      facturasToRender = this.list.filter(f => new Date(f.fecha).getTime() >= today);
+    } else if (this.currentFilter === 'semana') {
+      const oneWeekAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7).getTime();
+      facturasToRender = this.list.filter(f => new Date(f.fecha).getTime() >= oneWeekAgo);
+    } else if (this.currentFilter === 'mes') {
+      const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()).getTime();
+      facturasToRender = this.list.filter(f => new Date(f.fecha).getTime() >= oneMonthAgo);
+    }
+
+    if (facturasToRender.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">No hay facturas en este periodo.</td></tr>';
+      return;
+    }
+
+    facturasToRender.forEach(factura => {
       const fecha = new Date(factura.fecha).toLocaleString('es-ES');
       const estadoClass = factura.estado === 'Pagada' ? 'success' : 
                          factura.estado === 'Pendiente' ? 'warning' : 'danger';
