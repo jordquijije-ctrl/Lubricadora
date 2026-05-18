@@ -7,10 +7,10 @@ const PROVEEDORES = {
       const response = await fetch(this.API_URL);
       this.list = await response.json();
       this.render();
-      TOAST.show('✅ Proveedores cargados', 'success');
+      TOAST.show('✅', 'Proveedores cargados');
     } catch (error) {
       console.error('Error cargando proveedores:', error);
-      TOAST.show('❌ Error al cargar proveedores', 'error');
+      TOAST.show('❌', 'Error al cargar proveedores');
     }
   },
 
@@ -142,9 +142,16 @@ const PROVEEDORES = {
     const email = document.getElementById('email').value;
     const contacto = document.getElementById('contacto').value;
 
+    const submitBtn = document.querySelector('#form-proveedor button[type="submit"]');
+
     if (!nombre || !ruc) {
-      TOAST.show('❌ Nombre y RUC son requeridos', 'error');
+      TOAST.show('❌', 'Nombre y RUC son requeridos');
       return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '⏳ Guardando...';
     }
 
     try {
@@ -162,14 +169,27 @@ const PROVEEDORES = {
         })
       });
 
-      if (!response.ok) throw new Error('Error al guardar proveedor');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        let errorMessage = errorData.error || 'Error al guardar proveedor';
+        // Simplificar error de RUC duplicado
+        if (errorMessage.includes('UNIQUE KEY constraint') || errorMessage.includes('duplicate key')) {
+          errorMessage = 'El RUC ingresado ya existe en el sistema';
+        }
+        throw new Error(errorMessage);
+      }
 
       MODAL.close();
       this.loadProveedores();
-      TOAST.show('✅ Proveedor creado exitosamente', 'success');
+      TOAST.show('✅', 'Proveedor creado exitosamente');
     } catch (error) {
       console.error('Error:', error);
-      TOAST.show('❌ Error al crear proveedor', 'error');
+      TOAST.show('❌', error.message || 'Error al crear proveedor');
+      const submitBtn = document.querySelector('#form-proveedor button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '💾 Guardar Proveedor';
+      }
     }
   },
 
@@ -249,13 +269,20 @@ const PROVEEDORES = {
           })
         });
 
-        if (!response.ok) throw new Error('Error al actualizar');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          let errorMessage = errorData.error || 'Error al actualizar';
+          if (errorMessage.includes('UNIQUE KEY constraint') || errorMessage.includes('duplicate key')) {
+            errorMessage = 'El RUC ingresado ya existe en el sistema';
+          }
+          throw new Error(errorMessage);
+        }
 
         MODAL.close();
         this.loadProveedores();
-        TOAST.show('✅ Proveedor actualizado', 'success');
+        TOAST.show('✅', 'Proveedor actualizado');
       } catch (error) {
-        TOAST.show('❌ Error al actualizar proveedor', 'error');
+        TOAST.show('❌', error.message || 'Error al actualizar proveedor');
       }
     });
   },
@@ -271,10 +298,10 @@ const PROVEEDORES = {
       if (!response.ok) throw new Error('Error al eliminar');
 
       this.loadProveedores();
-      TOAST.show('✅ Proveedor eliminado', 'success');
+      TOAST.show('✅', 'Proveedor eliminado');
     } catch (error) {
       console.error('Error:', error);
-      TOAST.show('❌ Error al eliminar proveedor', 'error');
+      TOAST.show('❌', 'Error al eliminar proveedor');
     }
   }
 };
