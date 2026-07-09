@@ -166,10 +166,11 @@ const MOVIMIENTOS = {
     }
 
     
-    if (window.PROVEEDORES) {
+    if (PROVEEDORES) {
       if (!PROVEEDORES.list || PROVEEDORES.list.length === 0) {
         try {
           await PROVEEDORES.loadProveedores();
+          console.log('Proveedores cargados para select:', PROVEEDORES.list);
         } catch (err) {
           console.error('Error cargando proveedores en select:', err);
         }
