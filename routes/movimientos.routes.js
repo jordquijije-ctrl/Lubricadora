@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const MovimientoController = require('./controller-Movimiento');
+const MovimientoController = require('../controllers/movimiento.controller');
 
 // GET /api/movimientos - Obtener todos (con filtros opcionales)
 router.get('/', MovimientoController.getAll.bind(MovimientoController));

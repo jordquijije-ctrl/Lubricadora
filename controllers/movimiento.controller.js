@@ -1,4 +1,4 @@
-const MovimientoModel = require('./models-Movimiento');
+const MovimientoModel = require('../models/movimiento.model');
 
 class MovimientoController {
   static async getAll(req, res) {

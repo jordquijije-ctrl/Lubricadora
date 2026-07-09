@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const ProveedorController = require('./controller-Proveedor');
+const ProveedorController = require('../controllers/proveedor.controller');
 
 // GET /api/proveedores - Obtener todos
 router.get('/', ProveedorController.getAll.bind(ProveedorController));

@@ -1,4 +1,4 @@
-const EstadisticaModel = require('./models-Estadistica');
+const EstadisticaModel = require('../models/estadistica.model');
 
 class EstadisticaController {
   static async getGenerales(req, res) {

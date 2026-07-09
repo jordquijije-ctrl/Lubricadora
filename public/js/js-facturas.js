@@ -1,7 +1,7 @@
 const FACTURAS = {
   list: [],
   detalles: [],
-  API_URL: 'http://localhost:3000/api/facturas',
+  API_URL: '/api/facturas',
   currentFactura: null,
   currentFilter: 'hoy',
 
@@ -151,8 +151,8 @@ const FACTURAS = {
         </div>
 
         <div class="button-group">
-          <button type="submit" class="btn-primary">💾 Guardar Factura</button>
-          <button type="button" onclick="MODAL.close()" class="btn-secondary">✖️ Cancelar</button>
+          <button type="submit" class="btn btn-primary">💾 Guardar Factura</button>
+          <button type="button" onclick="MODAL.close()" class="btn btn-secondary">✖️ Cancelar</button>
         </div>
       </form>
     `);
@@ -334,7 +334,7 @@ const FACTURAS = {
         <p><strong>Usuario:</strong> ${factura.usuario}</p>
         <p><strong>Notas:</strong> ${factura.notas || 'N/A'}</p>
         <div class="button-group">
-          <button onclick="MODAL.close()" class="btn-secondary">Cerrar</button>
+          <button onclick="MODAL.close()" class="btn btn-secondary">Cerrar</button>
         </div>
       </div>
     `);
@@ -351,8 +351,8 @@ const FACTURAS = {
           </select>
         </div>
         <div class="button-group">
-          <button type="submit" class="btn-primary">💾 Actualizar</button>
-          <button type="button" onclick="MODAL.close()" class="btn-secondary">Cancelar</button>
+          <button type="submit" class="btn btn-primary">💾 Actualizar</button>
+          <button type="button" onclick="MODAL.close()" class="btn btn-secondary">Cancelar</button>
         </div>
       </form>
     `);
@@ -379,23 +379,23 @@ const FACTURAS = {
     });
   },
 
-  async deleteFactura(id) {
-    if (!confirm('¿Anular esta factura? Se revertirán todos los cambios de stock.')) return;
+  deleteFactura(id) {
+    MODAL.confirm('¿Anular esta factura? Se revertirán todos los cambios de stock.', async () => {
+      try {
+        const response = await fetch(`${this.API_URL}/${id}/anular`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' }
+        });
 
-    try {
-      const response = await fetch(`${this.API_URL}/${id}/anular`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' }
-      });
+        if (!response.ok) throw new Error('Error al anular');
 
-      if (!response.ok) throw new Error('Error al anular');
-
-      this.loadFacturas();
-      TOAST.show('✅ Factura anulada', 'success');
-    } catch (error) {
-      console.error('Error:', error);
-      TOAST.show('❌ Error al anular factura', 'error');
-    }
+        this.loadFacturas();
+        TOAST.show('✅ Factura anulada', 'success');
+      } catch (error) {
+        console.error('Error:', error);
+        TOAST.show('❌ Error al anular factura', 'error');
+      }
+    });
   }
 };
 

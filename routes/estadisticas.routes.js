@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = Router();
-const EstadisticaController = require('./controller-Estadistica');
+const EstadisticaController = require('../controllers/estadistica.controller');
 
 // ASEGÚRATE DE QUE LOS NOMBRES COINCIDAN CON EL CONTROLADOR
 router.get('/dashboard', EstadisticaController.getDashboard);

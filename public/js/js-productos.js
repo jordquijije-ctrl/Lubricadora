@@ -1,5 +1,5 @@
 // PRODUCTOS MODULE - CRUD Operations
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 const PRODUCTOS = {
   list: [],
@@ -35,8 +35,8 @@ const PRODUCTOS = {
         <td><span class="stock-badge ${this.getStockStatus(p.stock)}">${this.getStockLabel(p.stock)}</span></td>
         <td>$${p.precio_venta.toFixed(2)}</td>
         <td>
-          <button class="btn-secondary btn-sm" onclick="PRODUCTOS.editModal(${p.id})">Editar</button>
-          <button class="btn-danger btn-sm" onclick="PRODUCTOS.delete(${p.id})">Eliminar</button>
+          <button class="btn btn-secondary btn-sm" onclick="PRODUCTOS.editModal(${p.id})">Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="PRODUCTOS.delete(${p.id})">Eliminar</button>
         </td>
       </tr>
     `).join('');
@@ -113,19 +113,28 @@ const PRODUCTOS = {
     }
   },
 
-  async delete(id) {
-    if (!confirm('¿Estás seguro de eliminar este producto?')) return;
-
-    try {
-      const res = await fetch(`${API_URL}/productos/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Error al eliminar');
-      
-      TOAST.show('🗑️', 'Producto eliminado');
-      await this.loadProductos();
-    } catch (e) {
-      console.error('Error:', e);
-      TOAST.show('❌', 'Error al eliminar producto');
-    }
+  delete(id) {
+    MODAL.confirm('¿Estás seguro de eliminar este producto?', async () => {
+      try {
+        const res = await fetch(`${API_URL}/productos/${id}`, { method: 'DELETE' });
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Error al eliminar');
+        }
+        
+        TOAST.show('🗑️', 'Producto eliminado');
+        await this.loadProductos();
+      } catch (e) {
+        console.error('Error:', e);
+        let msg = 'Error al eliminar producto';
+        if (e.message.includes('REFERENCE constraint') || e.message.includes('conflicted with the REFERENCE constraint') || e.message.includes('conflict')) {
+          msg = 'No se puede eliminar: el producto tiene movimientos de inventario o facturas asociadas';
+        } else if (e.message) {
+          msg = e.message;
+        }
+        TOAST.show('❌', msg);
+      }
+    });
   }
 };
 

@@ -1,4 +1,4 @@
-const ProveedorModel = require('./models-Proveedor');
+const ProveedorModel = require('../models/proveedor.model');
 
 class ProveedorController {
   static async getAll(req, res) {

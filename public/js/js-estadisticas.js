@@ -1,5 +1,5 @@
 const ESTADISTICAS = {
-  API_URL: 'http://localhost:3000/api/estadisticas',
+  API_URL: '/api/estadisticas',
 
   async loadEstadisticas() {
     await Promise.allSettled([
@@ -27,21 +27,21 @@ const ESTADISTICAS = {
     };
 
       container.innerHTML = `
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px;">
-          <div style="font-size: 0.9em; opacity: 0.9;">Variedad Productos</div>
-          <div style="font-size: 2em; font-weight: bold;">${stats.total_productos}</div>
+        <div class="stat-card">
+          <div class="stat-label">Variedad Productos</div>
+          <div class="stat-value">${stats.total_productos}</div>
         </div>
-        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 8px;">
-          <div style="font-size: 0.9em; opacity: 0.9;">Stock Físico Total</div>
-          <div style="font-size: 2em; font-weight: bold;">${stats.cantidad_total}</div>
+        <div class="stat-card">
+          <div class="stat-label">Stock Físico Total</div>
+          <div class="stat-value">${stats.cantidad_total}</div>
         </div>
-        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 20px; border-radius: 8px;">
-          <div style="font-size: 0.9em; opacity: 0.9;">Valor Inventario</div>
-          <div style="font-size: 2em; font-weight: bold;">$${Number(stats.valor_inventario).toFixed(2)}</div>
+        <div class="stat-card">
+          <div class="stat-label">Valor Inventario</div>
+          <div class="stat-value">$${Number(stats.valor_inventario).toFixed(2)}</div>
         </div>
-        <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; padding: 20px; border-radius: 8px;">
-          <div style="font-size: 0.9em; opacity: 0.9;">Ventas Totales</div>
-          <div style="font-size: 2em; font-weight: bold;">$${Number(stats.total_ventas).toFixed(2)}</div>
+        <div class="stat-card">
+          <div class="stat-label">Ventas Totales</div>
+          <div class="stat-value">$${Number(stats.total_ventas).toFixed(2)}</div>
         </div>
       `;
     } catch (e) { console.error(e); }
@@ -90,22 +90,31 @@ const ESTADISTICAS = {
       // -------------------------------
 
       container.innerHTML = `
-        <div style="margin-bottom: 15px;">
-          <div style="display: flex; justify-content: space-between;"><span>✅ Normal</span> <strong>${counts.normal}</strong></div>
-          <div style="background: #eee; height: 10px; border-radius: 5px; overflow: hidden;">
-            <div style="background: #43e97b; height: 100%; width: ${(counts.normal / total) * 100}%"></div>
+        <div class="progress-container">
+          <div class="progress-header">
+            <span class="status-name normal">Normal</span>
+            <strong>${counts.normal}</strong>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill normal" style="width: ${(counts.normal / total) * 100}%"></div>
           </div>
         </div>
-        <div style="margin-bottom: 15px;">
-          <div style="display: flex; justify-content: space-between;"><span>🟡 Bajo</span> <strong>${counts.bajo}</strong></div>
-          <div style="background: #eee; height: 10px; border-radius: 5px; overflow: hidden;">
-            <div style="background: #ffd700; height: 100%; width: ${(counts.bajo / total) * 100}%"></div>
+        <div class="progress-container">
+          <div class="progress-header">
+            <span class="status-name bajo">Bajo</span>
+            <strong>${counts.bajo}</strong>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill bajo" style="width: ${(counts.bajo / total) * 100}%"></div>
           </div>
         </div>
-        <div>
-          <div style="display: flex; justify-content: space-between;"><span>🔴 Crítico</span> <strong>${counts.critico}</strong></div>
-          <div style="background: #eee; height: 10px; border-radius: 5px; overflow: hidden;">
-            <div style="background: #ff6b6b; height: 100%; width: ${(counts.critico / total) * 100}%"></div>
+        <div class="progress-container">
+          <div class="progress-header">
+            <span class="status-name critico">Crítico</span>
+            <strong>${counts.critico}</strong>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill critico" style="width: ${(counts.critico / total) * 100}%"></div>
           </div>
         </div>
       `;

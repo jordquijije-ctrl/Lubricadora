@@ -1,6 +1,6 @@
 const ALERTAS = {
   list: [],
-  API_URL: 'http://localhost:3000/api/alertas',
+  API_URL: '/api/alertas',
 
   async loadAlertas() {
     try {

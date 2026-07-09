@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const FacturaController = require('./controller-Factura');
+const FacturaController = require('../controllers/factura.controller');
 
 // GET /api/facturas - Obtener todas
 router.get('/', FacturaController.getAll.bind(FacturaController));

@@ -1,4 +1,4 @@
-const FacturaModel = require('./models-Factura');
+const FacturaModel = require('../models/factura.model');
 
 class FacturaController {
   static async getAll(req, res) {

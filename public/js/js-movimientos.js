@@ -1,6 +1,6 @@
 const MOVIMIENTOS = {
   list: [],
-  API_URL: 'http://localhost:3000/api/movimientos',
+  API_URL: '/api/movimientos',
   filtroActual: 'todos',
 
   async loadMovimientos(filtro = 'todos') {
@@ -86,8 +86,8 @@ const MOVIMIENTOS = {
         </div>
 
         <div class="button-group">
-          <button type="submit" class="btn-primary">📥 Registrar Entrada</button>
-          <button type="button" onclick="MODAL.close()" class="btn-secondary">✖️ Cancelar</button>
+          <button type="submit" class="btn btn-primary">📥 Registrar Entrada</button>
+          <button type="button" onclick="MODAL.close()" class="btn btn-secondary">✖️ Cancelar</button>
         </div>
       </form>
     `);
@@ -133,8 +133,8 @@ const MOVIMIENTOS = {
         </div>
 
         <div class="button-group">
-          <button type="submit" class="btn-primary">📤 Registrar Salida</button>
-          <button type="button" onclick="MODAL.close()" class="btn-secondary">✖️ Cancelar</button>
+          <button type="submit" class="btn btn-primary">📤 Registrar Salida</button>
+          <button type="button" onclick="MODAL.close()" class="btn btn-secondary">✖️ Cancelar</button>
         </div>
       </form>
     `);
@@ -151,26 +151,37 @@ const MOVIMIENTOS = {
     }, 100);
   },
 
-  cargarSelectsEntrada() {
+  async cargarSelectsEntrada() {
     const selectProducto = document.getElementById('producto_id');
     const selectProveedor = document.getElementById('proveedor_id');
 
     // Cargar productos
-    PRODUCTOS.list.forEach(p => {
-      const option = document.createElement('option');
-      option.value = p.id;
-      option.textContent = `${p.nombre} (Stock: ${p.stock})`;
-      selectProducto.appendChild(option);
-    });
+    if (PRODUCTOS.list) {
+      PRODUCTOS.list.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.textContent = `${p.nombre} (Stock: ${p.stock})`;
+        selectProducto.appendChild(option);
+      });
+    }
 
     // Cargar proveedores
-    if (window.PROVEEDORES && PROVEEDORES.list) {
-      PROVEEDORES.list.forEach(pr => {
-        const option = document.createElement('option');
-        option.value = pr.id;
-        option.textContent = pr.nombre;
-        selectProveedor.appendChild(option);
-      });
+    if (window.PROVEEDORES) {
+      if (!PROVEEDORES.list || PROVEEDORES.list.length === 0) {
+        try {
+          await PROVEEDORES.loadProveedores();
+        } catch (err) {
+          console.error('Error cargando proveedores en select:', err);
+        }
+      }
+      if (PROVEEDORES.list) {
+        PROVEEDORES.list.forEach(pr => {
+          const option = document.createElement('option');
+          option.value = pr.id;
+          option.textContent = pr.nombre;
+          selectProveedor.appendChild(option);
+        });
+      }
     }
   },
 
@@ -275,29 +286,29 @@ const MOVIMIENTOS = {
         <p><strong>Fecha:</strong> ${fecha}</p>
         <p><strong>Descripción:</strong> ${movimiento.descripcion || 'N/A'}</p>
         <div class="button-group">
-          <button onclick="MODAL.close()" class="btn-secondary">Cerrar</button>
+          <button onclick="MODAL.close()" class="btn btn-secondary">Cerrar</button>
         </div>
       </div>
     `);
   },
 
-  async deleteMovimiento(id) {
-    if (!confirm('¿Eliminar este movimiento? Se revertirán los cambios de stock.')) return;
+  deleteMovimiento(id) {
+    MODAL.confirm('¿Eliminar este movimiento? Se revertirán los cambios de stock.', async () => {
+      try {
+        const response = await fetch(`${this.API_URL}/${id}`, {
+          method: 'DELETE'
+        });
 
-    try {
-      const response = await fetch(`${this.API_URL}/${id}`, {
-        method: 'DELETE'
-      });
+        if (!response.ok) throw new Error('Error al eliminar');
 
-      if (!response.ok) throw new Error('Error al eliminar');
-
-      this.loadMovimientos(this.filtroActual);
-      PRODUCTOS.loadProductos();
-      TOAST.show('✅ Movimiento eliminado y stock revertido', 'success');
-    } catch (error) {
-      console.error('Error:', error);
-      TOAST.show('❌ Error al eliminar movimiento', 'error');
-    }
+        this.loadMovimientos(this.filtroActual);
+        PRODUCTOS.loadProductos();
+        TOAST.show('✅ Movimiento eliminado y stock revertido', 'success');
+      } catch (error) {
+        console.error('Error:', error);
+        TOAST.show('❌ Error al eliminar movimiento', 'error');
+      }
+    });
   }
 };
 

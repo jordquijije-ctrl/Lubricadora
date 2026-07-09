@@ -6,10 +6,10 @@
   <title>Lubricadoras Diana — Sistema de Control de Inventario</title>
   
   <!-- CSS BASE -->
-  <link rel="stylesheet" href="css-base.css">
-  <link rel="stylesheet" href="css-login.css">
-  <link rel="stylesheet" href="css-sidebar.css">
-  <link rel="stylesheet" href="css-main.css">
+  <link rel="stylesheet" href="css/css-base.css">
+  <link rel="stylesheet" href="css/css-login.css">
+  <link rel="stylesheet" href="css/css-sidebar.css">
+  <link rel="stylesheet" href="css/css-main.css">
 </head>
 <body>
 
@@ -133,7 +133,7 @@
         <button class="icon-btn" onclick="NAV.go('alertas')">
           🔔 <span class="dot"></span>
         </button>
-        <button class="btn-primary" id="btnNew" onclick="PRODUCTOS.showModal()">
+        <button class="btn btn-primary" id="btnNew" onclick="PRODUCTOS.showModal()">
           ➕ Nuevo Producto
         </button>
       </div>
@@ -405,7 +405,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">Catálogo de Productos</div>
-          <button class="btn-primary" onclick="PRODUCTOS.showModal()">➕ Nuevo</button>
+          <button class="btn btn-primary" onclick="PRODUCTOS.showModal()">➕ Nuevo</button>
         </div>
         <div class="table-wrap">
           <table id="productosTable">
@@ -434,7 +434,7 @@
           <h2>Facturación</h2>
           <p>Registro de ventas y comprobantes</p>
         </div>
-        <button class="btn-primary" onclick="FACTURAS.showModal()" style="margin-top: 0;">➕ Nueva Factura</button>
+        <button class="btn btn-primary" onclick="FACTURAS.showModal()" style="margin-top: 0;">➕ Nueva Factura</button>
       </div>
       
       <div class="card">
@@ -475,8 +475,8 @@
           <p>Historial de entradas y salidas</p>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 0;">
-          <button class="btn-primary" onclick="MOVIMIENTOS.showModalEntrada()" style="margin: 0;">📥 Registrar Entrada</button>
-          <button class="btn-primary" onclick="MOVIMIENTOS.showModalSalida()" style="margin: 0; background: #B54D4D;">📤 Registrar Salida</button>
+          <button class="btn btn-primary" onclick="MOVIMIENTOS.showModalEntrada()" style="margin: 0;">📥 Registrar Entrada</button>
+          <button class="btn btn-primary" onclick="MOVIMIENTOS.showModalSalida()" style="margin: 0; background: var(--danger);">📤 Registrar Salida</button>
         </div>
       </div>
       
@@ -555,7 +555,7 @@
           <h2>Proveedores</h2>
           <p>Gestión de proveedores y órdenes de compra</p>
         </div>
-        <button class="btn-primary" onclick="PROVEEDORES.showModal()" style="margin-top: 0;">➕ Nuevo Proveedor</button>
+        <button class="btn btn-primary" onclick="PROVEEDORES.showModal()" style="margin-top: 0;">➕ Nuevo Proveedor</button>
       </div>
       
       <div id="proveedores-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px;">
@@ -679,8 +679,8 @@
       </form>
     </div>
     <div class="modal-footer">
-      <button class="btn-secondary" onclick="MODAL.close('productModal')">Cancelar</button>
-      <button class="btn-primary" onclick="PRODUCTOS.save.call(PRODUCTOS)">✅ Guardar</button>
+      <button class="btn btn-secondary" onclick="MODAL.close('productModal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="PRODUCTOS.save.call(PRODUCTOS)">✅ Guardar</button>
     </div>
   </div>
 </div>
@@ -689,18 +689,18 @@
 <div id="toastContainer" class="toast-container"></div>
 
 <!-- SCRIPTS -->
-<script src="js-auth.js"></script>
-<script src="js-nav.js"></script>
-<script src="js-ui.js"></script>
-<script src="js-iconos.js"></script>
-<script src="js-productos.js"></script>
-<script src="js-facturas.js"></script>
-<script src="js-movimientos.js"></script>
-<script src="js-proveedores.js"></script>
-<script src="js-alertas.js"></script>
-<script src="js-estadisticas.js"></script>
+<script src="js/js-auth.js"></script>
+<script src="js/js-nav.js"></script>
+<script src="js/js-ui.js"></script>
+<script src="js/js-iconos.js"></script>
+<script src="js/js-productos.js"></script>
+<script src="js/js-facturas.js"></script>
+<script src="js/js-movimientos.js"></script>
+<script src="js/js-proveedores.js"></script>
+<script src="js/js-alertas.js"></script>
+<script src="js/js-estadisticas.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="js-dashboard.js"></script>
+<script src="js/js-dashboard.js"></script>
 
 </body>
 </html>

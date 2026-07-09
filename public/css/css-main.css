@@ -118,24 +118,39 @@
   border: 1.5px solid var(--surface);
 }
 
-.btn-primary {
-  display: flex;
+.btn {
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   padding: 9px 18px;
-  background: var(--text-primary);
-  color: var(--surface);
-  border: none;
-  border-radius: 8px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
+  border-radius: 8px;
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.btn-primary {
+  background: var(--text-primary);
+  color: var(--surface);
+  border-color: transparent;
 }
 
 .btn-primary:hover {
-  opacity: 0.88;
+  background: var(--text-secondary);
+  transform: translateY(-1px);
 }
 
 .btn-primary svg {
@@ -147,31 +162,28 @@
 }
 
 .btn-secondary {
-  padding: 9px 18px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
+  background: var(--surface-alt);
+  border-color: var(--border);
   color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.15s;
 }
 
 .btn-secondary:hover {
+  background: var(--border-light);
+  color: var(--text-primary);
   border-color: var(--text-tertiary);
+  transform: translateY(-1px);
 }
 
 .btn-danger {
   background: var(--danger-light);
   color: var(--danger);
-  padding: 6px 12px;
-  font-size: 12px;
+  border-color: transparent;
 }
 
 .btn-danger:hover {
-  opacity: 0.8;
+  background: var(--danger);
+  color: var(--surface);
+  transform: translateY(-1px);
 }
 
 /* VIEWS */
@@ -326,7 +338,7 @@ tbody tr:last-child td {
   position: fixed;
   inset: 0;
   background: rgba(26, 26, 24, 0.35);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
   z-index: 200;
   align-items: center;
   justify-content: center;
@@ -583,23 +595,24 @@ tbody tr:last-child td {
 
 /* BUTTON ICON */
 .btn-icon {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border: 1px solid var(--border);
   background: var(--surface);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   padding: 0;
 }
 
 .btn-icon:hover {
-  background: var(--surface-alt);
+  background: var(--accent-light);
   border-color: var(--accent);
+  transform: scale(1.05);
 }
 
 /* BUTTON GROUP */
@@ -625,30 +638,54 @@ tbody tr:last-child td {
   margin-bottom: 6px;
 }
 
+.form-group input,
+.form-group select,
+.form-group textarea,
 .form-input {
   width: 100%;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 13.5px;
   font-family: inherit;
   background: var(--surface);
   color: var(--text-primary);
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
 .form-input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(196, 163, 90, 0.1);
+  box-shadow: 0 0 0 3px rgba(196, 163, 90, 0.12);
 }
 
+.form-group input:required,
+.form-group select:required,
+.form-group textarea:required,
 .form-input:required {
   border-color: var(--border);
 }
 
-.form-input:invalid {
+.form-group input:invalid:not(:placeholder-shown),
+.form-input:invalid:not(:placeholder-shown) {
   border-color: var(--danger);
+}
+
+.form-group select,
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6962' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
 }
 
 .form-row {
@@ -932,3 +969,136 @@ textarea.form-input {
   }
 }
 
+
+/* ESTILOS DE TARJETAS DE ESTADISTICAS ELEGANTES */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent); /* Dorado elegante como barra superior */
+}
+
+.stat-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+/* Colores personalizados y elegantes para los progresos del inventario */
+.progress-container {
+  margin-bottom: 18px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.progress-header .status-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.progress-header .status-name::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.progress-header .status-name.normal::before {
+  background-color: var(--success);
+}
+.progress-header .status-name.bajo::before {
+  background-color: var(--warning);
+}
+.progress-header .status-name.critico::before {
+  background-color: var(--danger);
+}
+
+.progress-header strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.progress-bar-bg {
+  background: var(--border-light);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.progress-bar-fill.normal {
+  background-color: var(--success);
+}
+.progress-bar-fill.bajo {
+  background-color: var(--warning);
+}
+.progress-bar-fill.critico {
+  background-color: var(--danger);
+}
+
+/* SCROLLBARS ELEGANTES Y MINIMALISTAS */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+  border: 2px solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}

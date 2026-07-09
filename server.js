@@ -1,15 +1,16 @@
 // SERVIDOR PRINCIPAL EXPRESS
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const db = require('./db');
-const productosRoutes = require('./routes-productos');
-const proveedoresRoutes = require('./routes-proveedores');
-const movimientosRoutes = require('./routes-movimientos');
-const facturasRoutes = require('./routes-facturas');
-const alertasRoutes = require('./routes-alertas');
-const estadisticasRoutes = require('./routes-estadisticas');
+const productosRoutes = require('./routes/productos.routes');
+const proveedoresRoutes = require('./routes/proveedores.routes');
+const movimientosRoutes = require('./routes/movimientos.routes');
+const facturasRoutes = require('./routes/facturas.routes');
+const alertasRoutes = require('./routes/alertas.routes');
+const estadisticasRoutes = require('./routes/estadisticas.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // HEALTH CHECK
 app.get('/health', (req, res) => {
