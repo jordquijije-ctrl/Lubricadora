@@ -1,4 +1,4 @@
-// SERVIDOR PRINCIPAL EXPRESS
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -15,17 +15,17 @@ const estadisticasRoutes = require('./routes/estadisticas.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// MIDDLEWARE
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// HEALTH CHECK
+
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Servidor funcionando' });
 });
 
-// RUTAS API
+
 app.use('/api/productos', productosRoutes);
 app.use('/api/proveedores', proveedoresRoutes);
 app.use('/api/movimientos', movimientosRoutes);
@@ -33,13 +33,13 @@ app.use('/api/facturas', facturasRoutes);
 app.use('/api/alertas', alertasRoutes);
 app.use('/api/estadisticas', estadisticasRoutes);
 
-// ERROR HANDLING
+
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 
-// INICIAR SERVIDOR
+
 app.listen(PORT, async () => {
   try {
     await db.connect();
@@ -51,7 +51,7 @@ app.listen(PORT, async () => {
   }
 });
 
-// GRACEFUL SHUTDOWN
+
 process.on('SIGINT', async () => {
   console.log('\nCerrando servidor...');
   await db.close();

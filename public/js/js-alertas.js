@@ -22,7 +22,7 @@ const ALERTAS = {
       this.render(this.list);
     } else {
       const filtrados = this.list.filter(alerta => {
-        // Normalizamos "Crítico" -> "critico" para comparar con el valor del botón
+        
         const sev = (alerta.severidad || '')
           .toLowerCase()
           .normalize("NFD")
@@ -45,7 +45,7 @@ const ALERTAS = {
     }
 
     datosAMostrar.forEach(alerta => {
-      // Ajuste de nombres según tu AlertaModel.getAll()
+      
       const nivelTexto = alerta.severidad || 'Bajo';
       const esCritico = nivelTexto.toLowerCase().includes('crít');
       

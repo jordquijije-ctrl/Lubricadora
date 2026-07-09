@@ -172,7 +172,7 @@ const PROVEEDORES = {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         let errorMessage = errorData.error || 'Error al guardar proveedor';
-        // Simplificar error de RUC duplicado
+        
         if (errorMessage.includes('UNIQUE KEY constraint') || errorMessage.includes('duplicate key')) {
           errorMessage = 'El RUC ingresado ya existe en el sistema';
         }
@@ -315,7 +315,7 @@ const PROVEEDORES = {
   }
 };
 
-// Cargar proveedores al iniciar
+
 document.addEventListener('DOMContentLoaded', () => {
   if (document.querySelector('#proveedores-container')) {
     PROVEEDORES.loadProveedores();

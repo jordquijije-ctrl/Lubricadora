@@ -13,12 +13,12 @@ const ESTADISTICAS = {
     try {
     const response = await fetch(`${this.API_URL}/generales`);
     const data = await response.json();
-    console.log("Frontend Generales Data:", data); // PRINT DE CONTROL 2
+    console.log("Frontend Generales Data:", data); 
 
     const container = document.getElementById('stats-resumen');
     if (!container || !data) return;
 
-    // CORRECCIÓN: Usar las llaves que vienen del Backend (JSON)
+    
     const stats = {
       total_productos: data.total_productos || 0,
       cantidad_total: data.total_unidades_stock || 0,
@@ -51,7 +51,7 @@ const ESTADISTICAS = {
   try {
     const response = await fetch(`${this.API_URL}/top-productos`);
     const productos = await response.json();
-    console.log("Frontend Top Productos:", productos); // PRINT DE CONTROL 3
+    console.log("Frontend Top Productos:", productos); 
 
     const tbody = document.querySelector('#table-top-productos tbody');
     if (!tbody || !Array.isArray(productos)) return;
@@ -80,14 +80,14 @@ const ESTADISTICAS = {
         return i.estado_stock.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === tipo;
       }).length;
 
-      // --- LAS LÍNEAS QUE FALTABAN ---
+      
       const counts = { 
         normal: getCount('normal'), 
         bajo: getCount('bajo'), 
         critico: getCount('critico') 
       };
       const total = inventario.length || 1; 
-      // -------------------------------
+      
 
       container.innerHTML = `
         <div class="progress-container">

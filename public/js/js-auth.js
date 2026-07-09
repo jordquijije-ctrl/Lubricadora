@@ -1,4 +1,4 @@
-// AUTHENTICATION MODULE
+
 const AUTH = {
   USERS: {
     admin: { pass: 'admin123', role: 'admin', name: 'Administrador', initials: 'AD', label: 'Administrador' },
@@ -64,7 +64,7 @@ const AUTH = {
   }
 };
 
-// Init event listeners
+
 document.getElementById('loginPass')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') AUTH.handleLogin.call(AUTH);
 });

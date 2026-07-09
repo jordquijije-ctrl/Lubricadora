@@ -157,7 +157,7 @@ const FACTURAS = {
       </form>
     `);
 
-    // Esperar a que el DOM esté listo
+    
     setTimeout(() => {
       this.cargarProductosModal();
       this.getProximoNumero().then(num => {
@@ -399,7 +399,7 @@ const FACTURAS = {
   }
 };
 
-// Cargar facturas al iniciar
+
 document.addEventListener('DOMContentLoaded', () => {
   if (document.querySelector('#table-facturas')) {
     FACTURAS.loadFacturas();

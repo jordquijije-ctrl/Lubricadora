@@ -1,17 +1,17 @@
-// CONFIGURACIÓN DE BASE DE DATOS SQL SERVER
+
 require('dotenv').config();
 const sql = require('mssql');
 
 const config = {
   server: 'LubricadorasDiana.mssql.somee.com',
-  port: 1433, // Puerto estándar para SQL Server
+  port: 1433, 
   database: process.env.DB_NAME || 'LubricadorasDiana',
   user: process.env.DB_USER || 'admin-ug',
-  // Se usan comillas dobles externas para que la comilla simple interna no rompa el string
+  
   password: process.env.DB_PASSWORD || "!k2#JhD_&eHce;'",
   options: {
-    // Se eliminó instanceName: 'SQLEXPRESS' porque Somee usa la instancia predeterminada
-    encrypt: false, // Algunos servidores externos requieren false para conexiones no Azure
+    
+    encrypt: false, 
     trustServerCertificate: true,
     connectionTimeout: 30000,
     requestTimeout: 30000
@@ -31,7 +31,7 @@ class Database {
 
   async connect() {
     try {
-      // Usamos Singleton para no crear múltiples pools innecesariamente
+      
       if (!this.pool) {
         this.pool = await sql.connect(config);
         console.log('✅ Conectado a SQL Server (Somee)');

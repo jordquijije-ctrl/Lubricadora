@@ -155,7 +155,7 @@ const MOVIMIENTOS = {
     const selectProducto = document.getElementById('producto_id');
     const selectProveedor = document.getElementById('proveedor_id');
 
-    // Cargar productos
+    
     if (PRODUCTOS.list) {
       PRODUCTOS.list.forEach(p => {
         const option = document.createElement('option');
@@ -165,7 +165,7 @@ const MOVIMIENTOS = {
       });
     }
 
-    // Cargar proveedores
+    
     if (window.PROVEEDORES) {
       if (!PROVEEDORES.list || PROVEEDORES.list.length === 0) {
         try {
@@ -312,7 +312,7 @@ const MOVIMIENTOS = {
   }
 };
 
-// Cargar movimientos al iniciar
+
 document.addEventListener('DOMContentLoaded', () => {
   if (document.querySelector('#table-movimientos')) {
     MOVIMIENTOS.loadMovimientos();

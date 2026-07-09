@@ -1,4 +1,4 @@
-// PRODUCTOS MODULE - CRUD Operations
+
 const API_URL = '/api';
 
 const PRODUCTOS = {
@@ -138,7 +138,7 @@ const PRODUCTOS = {
   }
 };
 
-// Load productos on page load
+
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('productosTable')) {
     PRODUCTOS.loadProductos();

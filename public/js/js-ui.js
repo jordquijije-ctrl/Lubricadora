@@ -1,12 +1,12 @@
-// UI MODULES - MODAL, TOAST
+
 
 const MODAL = {
   open(titleOrId, content = null) {
-    // Si content existe, es modal dinámico (nuevo sistema)
+    
     if (content !== null) {
       return this.openDynamic(titleOrId, content);
     }
-    // Si no, es modal fijo (viejo sistema)
+    
     const elem = document.getElementById(titleOrId);
     if (elem) {
       elem.classList.add('active');
@@ -14,7 +14,7 @@ const MODAL = {
   },
 
   openDynamic(title, html) {
-    // Crear o reutilizar overlay dinámico
+    
     let overlay = document.getElementById('dynamicModalOverlay');
     if (!overlay) {
       overlay = document.createElement('div');
@@ -30,7 +30,7 @@ const MODAL = {
       overlay.style.display = 'flex';
     }
 
-    // Crear modal
+    
     let modal = overlay.querySelector('.modal');
     if (!modal) {
       modal = document.createElement('div');
@@ -113,11 +113,11 @@ const MODAL = {
   },
 
   close(idOrNothing = null) {
-    // Si es modal dinámico
+    
     if (idOrNothing === undefined || idOrNothing === null) {
       return this.closeDynamic();
     }
-    // Si es modal fijo
+    
     const elem = document.getElementById(idOrNothing);
     if (elem) {
       elem.classList.remove('active');
@@ -144,5 +144,5 @@ const TOAST = {
   }
 };
 
-// Init modals
+
 document.addEventListener('DOMContentLoaded', () => MODAL.init());
